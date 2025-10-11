@@ -190,9 +190,9 @@ const AdminOrdersView = () => {
             >
               {/* Header */}
               <div className="text-center">
-                <h1 className="text-5xl font-bold">{Store_Name}</h1>
+                <h1 className="text-5xl font-bold">{Store_Name} 🦋 </h1>
                 <h2 className="text-2xl font-semibold">Kathmandu</h2>
-                <h2 className="text-2xl font-semibold">9864782899</h2>
+                <h2 className="text-2xl font-semibold">9863141737</h2>
               </div>
 
               {/* Order Information */}
@@ -217,17 +217,21 @@ const AdminOrdersView = () => {
               {/* Shipping Info & QR Code */}
               <div className="grid grid-cols-2 gap-12">
                 <div>
-                  <h3 className="font-medium text-4xl mb-6">Shipping Info</h3>
+                  <h3 className="font-medium text-4xl mb-6">Ship To</h3>
                   <p className="text-3xl mb-1">{order.addressInfo?.fullName}</p>
                   <p className="text-3xl mb-1">{order.addressInfo?.address}</p>
                   <p className="text-3xl mb-1">{order.addressInfo?.city}</p>
                   <p className="text-3xl mb-1">{order.addressInfo?.phone}</p>
                 </div>
                 <div className="flex justify-end">
+                  <div className="flex flex-col">
                   <QRCode
                     value={`${window.location.origin}/admin/qrcodedetail/${order._id}`}
                     size={200}
                   />
+                  <br />
+                  <p className="text-center text-xl opacity-80">Scan for Order Tracking</p>
+                  </div>
                 </div>
               </div>
 

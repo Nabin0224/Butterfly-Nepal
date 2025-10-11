@@ -34,15 +34,7 @@ mongoose
   .catch((e) => console.error("MongoDB connection error:", e));
 
 
-// mongoose
-//   .connect(process.env.CONNECTION, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//     serverSelectionTimeoutMS: 30000,
-//      // Increase timeout duration
-//   })
-//   .then(() => console.log("MongoDb connected successfully"))
-//   .catch((e) => console.log("Error:", e));
+
 
 app.use(cookieParser());
 app.use(bodyParser.json());

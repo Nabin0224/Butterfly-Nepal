@@ -298,11 +298,11 @@ const CreateCustomOrder = () => {
     const firstName = fullName.split(" ")[0].toUpperCase();
     console.log("first name", firstName);
 
-    dispatch(
+    !id && dispatch(
       sendSms({
         to: [data.phone],
         text: [
-          `Dear ${firstName}, Thanks for your order at ${Store_Name}. Your order is confirmed and being processed. Reach us at instagram.`,
+          `Dear ${firstName}, Thanks for your order at ${Store_Name}. Your order is confirmed and being processed. Reach us at instagram butterfly_nepal.np.`,
         ],
       })
     ).then((date) => {

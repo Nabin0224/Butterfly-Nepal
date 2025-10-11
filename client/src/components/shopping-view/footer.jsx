@@ -120,7 +120,7 @@ const ShoppingFooter = () => {
               <Mail />
             </span>
             <p className="font-light text-xs md:text-sm">
-              stylemeofficial.np@gmail.com
+              butterflynepal7@gmail.com
             </p>
           </div>
         </div>

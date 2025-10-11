@@ -39,7 +39,7 @@ const PaymentSuccessPage = () => {
             <span className='font-light' >- Delivery Time: 2-5 business days</span>
           </div>
           <div className="text-sm tracking-tighter text-gray-500 mb-4 w-full px-4 mt-6">
-            Need help? Customer support at stylemeofficial.np@gmail.com
+            Need help? Customer support at butterflynepal7@gmail.com
           </div>
           <Button 
             onClick={handleViewDetails} 
