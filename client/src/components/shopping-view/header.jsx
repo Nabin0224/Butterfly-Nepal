@@ -158,11 +158,11 @@ function HeaderRightContent({
           onClick={() => {
             setOpenCartSheet(true);
           }}
-          variant="outline"
+          variant="Ghost"
           size="icon"
           className="relative"
         >
-          <ShoppingCart className="h-6 w-6" />
+          <ShoppingCart strokeWidth={1.2} className="h-6 w-6" />
           {normalizedItems.length > 0 ? (
             <span className="absolute top-[-2px] right-[4px] font-bold text-xs">
               {normalizedItems.length}
@@ -220,9 +220,15 @@ const ShoppingHeader = () => {
   const { cartItems } = useSelector((state) => state.shoppingCart);
   const [openCartSheet, setOpenCartSheet] = useState(false);
 
+    // Normalize items for both guest (array) and logged-in (object with .items)
+    const normalizedItems = user?.id
+    ? (cartItems && cartItems.items ? cartItems.items : [])
+    : (Array.isArray(cartItems) ? cartItems : []);
+ 
+
   return (
     <header className="top-0 z-50 w-full border-b bg-white backdrop-blur-md shadow-md transition-all duration-300">
-      <div className="flex h-16 items-center justify-between px-4 md:px-6">
+      <div className="flex h-12 md:h-16 items-center justify-between px-2 md:px-6">
         <Link
           to="/
         "
@@ -233,7 +239,7 @@ const ShoppingHeader = () => {
         </Link>
 
         {/* for mobile devices  */}
-        <div className="flex gap-2">
+        <div className="flex relative left-4">
           <Sheet
             open={openCartSheet}
             onOpenChange={() => {
@@ -241,20 +247,21 @@ const ShoppingHeader = () => {
               setOpenMobileCartSheet(false);
             }}
           >
-            <Button
+            <Button 
               onClick={() => {
                 setOpenCartSheet(true);
               }}
-              variant="outline"
+              variant="Ghost"
               size="icon"
-              className="relative lg:hidden"
+              className="relative lg:hidden "
+              
             >
-              <ShoppingCart className="h-4 w-4" />
-              {cartItems?.items?.length > 0 ? (
-                <span className="absolute top-[-2px] right-[4px] font-bold text-xs">
-                  {cartItems?.items?.length}
-                </span>
-              ) : null}
+              <ShoppingCart strokeWidth={1.2} className="h-4 w-4" />
+              {normalizedItems.length > 0 ? (
+            <span className="absolute top-[-2px] right-[4px] font-bold text-xs">
+              {normalizedItems.length}
+            </span>
+          ) : null}
               <span className="sr-only">User cart</span>
             </Button>
             <UserCartWrapper
@@ -276,8 +283,9 @@ const ShoppingHeader = () => {
               <Button
                 onClick={() => setOpenMobileCartSheet(true)}
                 className="lg:hidden"
+                variant = "Ghost"
               >
-                <Menu className="h-4 w-4" />
+                <Menu strokeWidth={1} className="h-4 w-4" />
                 <span className="sr-only">Toggle header menu</span>
               </Button>
             </SheetTrigger>

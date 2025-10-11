@@ -2,7 +2,8 @@ require('dotenv').config();
 const paypal = require('../../helpers/paypal')
 const Order = require("../../models/Order")
 const Cart = require("../../models/Cart")
-const Product = require("../../models/products")
+const Product = require("../../models/products");
+const mongoose = require("mongoose")
 const createOrder = async (req, res) => {
   try {
     const {
@@ -61,6 +62,7 @@ const createOrder = async (req, res) => {
         } else{
             const newlyCreatedOrder = new Order( { 
                 userId,
+                guestId: req.body.guestId || null ,
       cartItem,
       addressInfo,
       orderStatus,
@@ -153,8 +155,25 @@ const capturePayment = async (req, res) => {
 
 const getAllOrdersByUser = async(req, res)=> {
 try {
-  const { userId } = req.params;
-  const orders = await Order.find({userId})  // returns array of orders present in the database 
+  const { id } = req.params;
+  console.log("id in get order", id)
+
+  if(!id) {
+    return res.status(400).json({
+      success: false,
+      message: "No Id Provided!"
+    })
+  }
+
+  let query = {};
+  if(mongoose.Types.ObjectId.isValid(id)) {
+    query = {userId: id};
+  }else {
+    query = {guestId: id}
+  }
+
+  const orders = await Order.find(query).sort({createdAt: -1})  // returns array of orders present in the database 
+  console.log("orders in check", orders)
 
   if(orders.length < 0 ) {
     return res.status(404).json({

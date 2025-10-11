@@ -2,6 +2,10 @@ const mongoose =  require("mongoose");
 
 const CodOrderSchema = new mongoose.Schema({
     userId: String,
+    guestId: {
+        type: String,
+        required: false,
+    },
     cartId: String,
     addressInfo: {
         fullName: String,

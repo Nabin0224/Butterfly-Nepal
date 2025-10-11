@@ -328,6 +328,7 @@ const ShoppingCheckout = () => {
         color: singleCartItem?.color
       })),
       userId: user?.id || null,
+      guestId: localStorage.getItem("guestId") || null,
       cartId: user?.id ? (cartItems?._id || null) : null,
       orderDate: nepalTime,
       orderUpdateDate: nepalTime,

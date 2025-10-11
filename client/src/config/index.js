@@ -3,6 +3,9 @@ import bag from '../assets/category/bag.jpg'
 import dress from '../assets/category/dress.PNG'
 import accessories from '../assets/category/accessories.PNG'
 import foot from '../assets/category/foot.PNG'
+import home_bag from "../assets/category/category_bag.jpg"
+import home_dress from "../assets/category/category_dress.jpg"
+import home_shoes from "../assets/category/category_shoes.jpg"
 
 export const registerFormControls = [
   {
@@ -179,10 +182,10 @@ export const shoppingViewHeaderMenuItems = [
 
 export const categoryOptionsMap = {
   dress: "Dress",
-  bag: "Bags"
+  bag: "Bags",
   // kids: "Kids",
   // accessories: "Accessories",
-  // footwear: "Footwear",
+  footwear: "Footwear",
 };
 
 export const brandOptionsMap = {
@@ -194,18 +197,6 @@ export const brandOptionsMap = {
   "h&m": "H&M",
 };
 
-export const filterOptions = {
-  category: [
-    { id: "dress", label: "Dress" },
-    { id: "bags", label: "Bags" },
-    // { id: "accessories", label: "Accessories" },
-    // { id: "footwear", label: "Footwear" },
-  ],
-  brand: [
-    { id: "no brand", label: "No Brand" },
-   
-  ],
-};
 
 export const sortOptions = [
   { id: "price-lowtohigh", label: "Price: Low to High" },
@@ -226,7 +217,7 @@ export const addressFormControls = [
     label: "Select",
     name: "city",
     componentType: "select",
-     options : [
+    options : [
       { id: "kathmandu", label: "Kathmandu" },
       { id: "lalitpur", label: "Lalitpur" },
       
@@ -298,7 +289,7 @@ export const addressFormControls = [
       { id: "khandbari", label: "Khandbari" },
       { id: "khotang", label: "Khotang" },
       { id: "lahan", label: "Lahan" },
-     
+      
       { id: "lamjung", label: "Lamjung" },
       { id: "mahendranagar", label: "Mahendranagar" },
       { id: "mahottari", label: "Mahottari" },
@@ -363,7 +354,7 @@ export const addressFormControls = [
     
     // placeholder: "Enter your city",
   },
-
+  
   {
     label: "Address",
     name: "address",
@@ -371,7 +362,7 @@ export const addressFormControls = [
     type: "text",
     placeholder: "Enter your address",
   },
- 
+  
   
   {
     label: "Phone",
@@ -389,11 +380,26 @@ export const addressFormControls = [
   },
 ];
 
- export const categoriesWithImage = [
-    { id: "dress", label: "Dress", image  : dress},
-      { id: "bag", label: "Bag" , image : bag},
-      { id: "footwear", label: "Footwear", image : foot },
-      { id: "accessories", label: "Accessories", image : accessories },
+export const categoriesWithImage = { 
+  category : [
+  { id: "dress", label: "Dress", image  : home_dress},
+  { id: "bag", label: "Bag" , image : home_bag},
+  { id: "footwear", label: "Footwear", image : home_shoes },
+  // { id: "accessories", label: "Accessories", image : accessories },
   
 ]
+}
 
+
+export const filterOptions = {
+  category: [
+    { id: "dress", label: "Dress" },
+    { id: "bags", label: "Bags" },
+    // { id: "accessories", label: "Accessories" },
+    // { id: "footwear", label: "Footwear" },
+  ],
+  brand: [
+    { id: "no brand", label: "No Brand" },
+   
+  ],
+};

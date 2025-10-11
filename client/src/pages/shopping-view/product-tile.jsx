@@ -1,93 +1,90 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import ProductDetailsPage from "./product-details";
 
-const ShoppingProducttile = ({
-  product,
-  handleGetProductDetails,
-  handleAddtoCart,
-  setOpen,
-}) => {
+const ShoppingProductTile = ({ product, handleGetProductDetails, setOpen }) => {
   const navigate = useNavigate();
-  return (
-    <>
-      <Card className="w-full max-w-sm mx-auto">
-        <div
-          onClick={() => {
-            handleGetProductDetails(product?._id);
-            navigate(`/product-detail/${product._id}`);
 
-            setOpen(true);
-          }}
-        >
-          <div className="relative">
-            <img
-              src={product?.image[0]}
-              alt={product?.title}
-              className="w-full h-[300px] object-cover rounded-t-lg"
-            />
-            {product?.totalStock === 0 ? (
-              <Badge className=" absolute top-[2px] left-[2px] bg-red-400 hover:bg-red-600">
-                Out of Stock
-              </Badge>
-            ) : product?.totalStock <= 10 ? (
-              <Badge className=" absolute top-[2px] left-[2px] bg-red-400 hover:bg-red-600">
-                {`Only ${product.totalStock} items left`}
-              </Badge>
-            ) : product?.salePrice > 0 ? (
-              <Badge className=" absolute top-[2px] left-[2px] bg-red-400 hover:bg-red-600">
-                Sale
-              </Badge>
-            ) : null}
-          </div>
-          <CardContent className=" p-2 md:p-4">
-            <h2 className="text-lg md:text-xl font-semibold mb-2">
-              {product?.title}
-            </h2>
-            <div className="flex justify-between items-center md:mb-2">
-              <span className="text-sm text-muted-foreground">
-                {product?.category}
-              </span>
-              <span className="text-sm text-muted-foreground">
-                {product?.brand}
-              </span>
-            </div>
-            <div className="flex justify-between items-center mb-1 md:mb-2">
-              <span
-                className={`${
-                  product?.salePrice > 0 && "line-through"
-                } text-sm md:text-lg text-semibold text-primary`}
-              >
-                ₹{product?.price}
-              </span>
-              {product?.salePrice > 0 ? (
-                <span className="text-sm md:text-lg text-semibold text-primary">
-                  ₹{product?.salePrice}
-                </span>
-              ) : null}
-            </div>
-          </CardContent>
-        </div>
-        <CardFooter className=" relative w-full flex justify-center h-10">
-          {product?.totalStock === 0 ? (
-            <Button className=" opacity-40 cursor-not-allowed absolute bottom-1 w-[90%] flex-grow ">
-              Out of Stock
-            </Button>
-          ) : (
-            <Button
-              onClick={() => handleAddtoCart(product?._id, product?.totalStock)}
-              className=" absolute bottom-1 w-[90%] flex-grow hidden"
-            >
-              Add to Cart
-            </Button>
+  return (
+    <Card
+      onClick={() => {
+        handleGetProductDetails(product?._id);
+        navigate(`/product-detail/${product._id}`);
+        setOpen(true);
+      }}
+      className="group w-full max-w-sm mx-auto cursor-pointer overflow-hidden border border-gray-100 rounded-2xl shadow-none"
+    >
+      {/* Product Image */}
+      <div className="relative overflow-hidden bg-gray-50">
+        <img
+          src={product?.image[0]}
+          alt={product?.title}
+          className="w-full h-[300px] object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        {/* Status Badge */}
+        {product?.totalStock === 0 ? (
+          <Badge className="absolute top-2 left-2 bg-red-500 text-white">
+            Out of Stock
+          </Badge>
+        ) : product?.totalStock <= 10 ? (
+          <Badge className="absolute top-2 left-2 bg-amber-500 text-white">
+            Only {product.totalStock} left
+          </Badge>
+        ) : product?.salePrice > 0 ? (
+          <Badge className="absolute top-2 left-2 bg-green-500 text-white">
+            Sale
+          </Badge>
+        ) : null}
+      </div>
+
+      {/* Product Info */}
+      <CardContent className="p-4">
+        {/* Title */}
+        <h2 className="text-base md:text-lg font-medium text-gray-800 mb-2 tracking-wide line-clamp-1">
+          {product?.title}
+        </h2>
+
+        {/* Price Section */}
+        <div className="flex items-center gap-2 mb-3">
+          <span
+            className={`text-xs md:text-base font-medium ${
+              product?.salePrice > 0 ? "line-through text-gray-400" : "text-gray-500"
+            }`}
+          >
+            ₹{product?.price}
+          </span>
+          {product?.salePrice > 0 && (
+            <span className="text-sm md:text-base">
+              ₹{product?.salePrice}
+            </span>
           )}
-        </CardFooter>
-      </Card>
-    </>
+        </div>
+
+        {/* Colors Section */}
+        {product?.colors?.length > 0 && (
+          <div className="flex items-center gap-2 mt-2">
+            <span className="text-xs text-gray-500">Colors:</span>
+            <div className="flex gap-1.5">
+              {product?.colors.slice(0, 5).map((color, index) => (
+                <div
+                  key={index}
+                  className="w-5 h-5 rounded-full border border-gray-200"
+                  style={{ backgroundColor: color.code }}
+                  title={color.colorName}
+                ></div>
+              ))}
+              {product?.colors.length > 5 && (
+                <span className="text-xs text-gray-400">
+                  +{product.colors.length - 5}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
-export default ShoppingProducttile;
+export default ShoppingProductTile;

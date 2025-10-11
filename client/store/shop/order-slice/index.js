@@ -29,6 +29,7 @@ export const captureOrder = createAsyncThunk('/order/captureOrder', async({payer
 })
 
 export const getAllOrdersByUser = createAsyncThunk("/order/getAllOrdersByUser", async(userId)=> {
+    console.log("check guestId in thunk", userId)
    const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/shop/order/list/${userId}`)
    return response.data
 })

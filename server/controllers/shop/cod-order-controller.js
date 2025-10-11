@@ -2,12 +2,14 @@ const CodOrder = require("../../models/CodOrder");
 const Cart = require("../../models/Cart");
 const EsewaOrder = require("../../models/EsewaOrder");
 const Product = require("../../models/products");
-const {sendOrderConfirmationEmail} = require("../../helpers/gmail")
+const {sendOrderConfirmationEmail} = require("../../helpers/gmail");
+const mongoose = require("mongoose");
 
 const createCodOrder = async (req, res) => {
   try {
     const formData = req.body;
     console.log("formData in cod", formData)
+    console.log("guestId from formData:", formData.guestId, typeof formData.guestId);
 
     if (!formData || formData == null) {
       return res.status(401).json({
@@ -78,22 +80,33 @@ const createCodOrder = async (req, res) => {
 
 const getAllOrdersByUser = async (req, res) => {
   try {
-    const { userId } = req.params;
-    if (!userId) {
+    const { id } = req.params;
+    console.log("check id in cod order")
+
+    if (!id) {
       return res.status(401).json({
         success: false,
         message: "UserId not received!",
       });
     }
-    "userId in getAllOrdersByUser in Cod", userId;
 
-    const order = await CodOrder.find({ userId });
+    let query = {};
+    if(mongoose.Types.ObjectId.isValid(id)) {
+      query = { userId: id}
+    } else {
+      query = { guestId: id}
+    }
 
-    if (order.length == 0) {
+
+
+    const order = await CodOrder.find(query).sort({createdAt: -1});
+    console.log("orders chekc in cod corder", order)
+
+    if(order.length < 0 ) {
       return res.status(404).json({
         success: false,
-        message: "order not in getAllOrdersByUser of cod !",
-      });
+        message: "No orders found!"
+      })
     }
 
     return res.status(200).json({

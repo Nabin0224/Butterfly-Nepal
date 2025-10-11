@@ -84,6 +84,13 @@ const ProductDetailsPage = () => {
     }
   }, [productDetails]);
 
+  useEffect(() => {
+    if (productDetails?.colors && productDetails?.colors.length > 0) {
+      setSelectedColor(productDetails.colors[0].colorName)
+    }
+  }, [productDetails])
+  
+
   console.log("productDetals", productDetails);
   console.log("cartItems in product details", cartItems);
   console.log("user:", user);
@@ -306,8 +313,7 @@ const ProductDetailsPage = () => {
                   height={50}
                   className={`aspect-square rounded-sm object-center object-cover transition-all duration-200 ${
                     currentImageIndex === index
-                      ? "scale-110 border-blue-500 "
-                      : ""
+                      ? "border-4 border-black scale-110" : "border border-gray-200"
                   } `}
                 />
               ))

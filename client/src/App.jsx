@@ -128,9 +128,9 @@ const App = () => {
             <Route
               path={ROUTES.ACCOUNT}
               element={
-                <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+                // <CheckAuth isAuthenticated={isAuthenticated} user={user}>
                   <ShoppingAccount />
-                </CheckAuth>
+                // </CheckAuth>
               }
             />
            

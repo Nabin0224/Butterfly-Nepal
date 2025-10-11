@@ -4,180 +4,147 @@ import { Mail, Phone } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import axios from "axios";
-import {
-  Link,
-  Navigate,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { shoppingViewHeaderMenuItems } from "@/config";
-import { toast,  useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { Store_Name } from "../../utils/constants/storeConstants";
 
-
 const ShoppingFooter = () => {
-
   const [searchParams, setSearchParams] = useSearchParams();
   const [inputValue, setInputValue] = useState("");
-  const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
-  function handleNavigate(menuItem) {
+  const handleNavigate = (menuItem) => {
     sessionStorage.removeItem("filters");
     const currentFilter =
       menuItem.id !== "home" &&
       menuItem.id !== "products" &&
       menuItem.id !== "search"
-        ? {
-            category: [menuItem.id],
-          }
+        ? { category: [menuItem.id] }
         : null;
     sessionStorage.setItem("filters", JSON.stringify(currentFilter));
 
-    location.pathname.includes("listing") && currentFilter !== null
-      ? setSearchParams(new URLSearchParams(`?category=${menuItem.id}`))
-      : setTimeout(() => {
-          navigate(menuItem.path);
-        }, 1000);
-  }
-  function handleInputChange(event) {
-    setInputValue(event.target.value);
-  }
+    if (location.pathname.includes("listing") && currentFilter !== null) {
+      setSearchParams(new URLSearchParams(`?category=${menuItem.id}`));
+    } else {
+      setTimeout(() => navigate(menuItem.path), 400);
+    }
+  };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (!inputValue) {
-      setMessage("Please enter your email!");
+      toast({ title: "Please enter your email!", duration: 2000 });
       return;
     }
-
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/shop/subscribe/getSubscribed`, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/shop/subscribe/getSubscribed`, {
         email: inputValue,
       });
-      console.log("response of subscribe", response)
-      if (response?.data?.success) {
-        toast({
-          title: response?.data?.message,
-          duration: 2000,
-        });
-        setInputValue("");
-      } else{
-        toast({
-          title : response?.data?.message,
-          duration: 2000
-        })
-      }
+      toast({
+        title: res?.data?.message,
+        duration: 2000,
+      });
+      setInputValue("");
     } catch (error) {
-      console.error("Subscribe error", error);
+      console.error(error);
+      toast({ title: "Something went wrong", duration: 2000 });
     }
   };
 
   return (
-    <div className="flex flex-col w-full  bg-black max-h-full border-t">
-      <div className="h-[30%] flex flex-col md:flex-row w-full justify-between gap-2 ">
-        <h1 className="text-white/90 font-semibold md:font-thin text-4xl md:text-6xl  mx-auto md:mx-16 tracking-widest my-4 md:my-12 ">
-          {Store_Name}
-        </h1>
-        <div className="w-full md:w-1/2 relative flex  justify-center">
-          <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
-            <span>
-              <Input
-                type="email"
-                value={inputValue}
-                onChange={handleInputChange}
-                placeholder="example@gmail.com"
-                className="focus:outline focus:outline-4 focus:outline-blue-500 text-white md:absolute md:bottom-8 md:right-24 w-full md:w-[75%] md:h-10"
-              />
-            </span>
-            <span>
-              <Button
-              
-                variant="outline"
-                type="submit"
-                className=" w-full  md:w-[25%] md:absolute md:bottom-8 md:right-10 md:rounded-none md:h-10"
-              >
-                SUBSCRIBE
-              </Button>
-            </span>
+    <footer className="bg-neutral-900 text-neutral-200 border-t border-neutral-800 mt-10">
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        {/* --- Brand + Subscribe Section --- */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-10 mb-10">
+          <h1 className="font-serif text-4xl md:text-6xl tracking-wide text-white">
+            {Store_Name}
+          </h1>
+
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto"
+          >
+            <Input
+              type="email"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Enter your email"
+              className="bg-neutral-800 border-neutral-700 text-neutral-100 placeholder:text-neutral-400 focus:ring-2 focus:ring-yellow-500 md:w-72"
+            />
+            <Button
+              type="submit"
+              variant="default"
+              className="bg-yellow-500 hover:bg-yellow-400 text-black font-medium tracking-wider md:px-6"
+            >
+              SUBSCRIBE
+            </Button>
           </form>
         </div>
-      </div>
-      <Separator className="w-[90%] md:w-[95%] mx-auto opacity-65 mb-4 mt-4" />
-      <div className="grid sm:grid-cols-1 md:grid-cols-4  gap-8 md:gap-4 h-full mx-8 md:mt-6 md:mx-8">
-        <div className="text-white flex flex-col gap-3">
-          <h3 className="text-2xl font-light mb-1 md:mb-2">Get Connected</h3>
-          <div className="flex gap-2 mx-4 text-white/80 cursor-pointer text-xs md:text-sm">
-            <span>
-              <Phone />
-            </span>
-            <p className="font-light">9864782899</p>
+
+        <Separator className="opacity-40 my-6" />
+
+        {/* --- Footer Grid --- */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+          {/* Contact */}
+          <div className="space-y-3">
+            <h3 className="text-xl font-semibold text-white mb-2">Get Connected</h3>
+            <div className="flex items-center gap-2 text-neutral-400 hover:text-yellow-400 transition-colors">
+              <Phone className="h-4 w-4" />
+              <p className="text-sm">9864782899</p>
+            </div>
+            <div className="flex items-center gap-2 text-neutral-400 hover:text-yellow-400 transition-colors">
+              <Mail className="h-4 w-4" />
+              <p className="text-sm">butterflynepal7@gmail.com</p>
+            </div>
           </div>
-          <div className="flex gap-2 mx-4 text-white/80">
-            <span>
-              <Mail />
-            </span>
-            <p className="font-light text-xs md:text-sm">
-              butterflynepal7@gmail.com
+
+          {/* Quick Links */}
+          <div className="space-y-3">
+            <h3 className="text-xl font-semibold text-white mb-2">Quick Links</h3>
+            <p className="text-sm text-neutral-400 hover:text-yellow-400 transition-colors cursor-pointer">
+              {Store_Name}
+            </p>
+            <p className="text-sm text-neutral-400 hover:text-yellow-400 transition-colors cursor-pointer">
+              Contact Us
             </p>
           </div>
-        </div>
-        <div className="text-white flex flex-col gap-3">
-          <h3 className="text-2xl font-light mb-1  md:mb-2">Quick Links</h3>
-          <div className="flex gap-2 mx-4 text-white/80 text-xs">
-            <p className="font-light md:text-sm">{Store_Name}</p>
-          </div>
-          <div className="flex gap-2 mx-4 text-white/80 text-xs">
-            <p className="font-light md:text-sm">Contact Us</p>
-          </div>
-        </div>
-        <div className="text-white flex flex-col gap-3 cursor-pointer">
-          <h3 className="text-2xl font-light mb:1 md:mb-2">Shop Now</h3>
-          {shoppingViewHeaderMenuItems.map((menuItem) => (
-            <div className="flex gap-2 mx-4 text-white/80 text-xs md:text-sm">
+
+          {/* Shop */}
+          <div className="space-y-3">
+            <h3 className="text-xl font-semibold text-white mb-2">Shop Now</h3>
+            {shoppingViewHeaderMenuItems.map((menuItem) => (
               <p
-                onClick={() => handleNavigate(menuItem)}
                 key={menuItem.id}
-                className="font-light"
+                onClick={() => handleNavigate(menuItem)}
+                className="text-sm text-neutral-400 hover:text-yellow-400 transition-colors cursor-pointer"
               >
                 {menuItem.label}
               </p>
-            </div>
-          ))}
-        </div>
-        <div className="text-white flex flex-col gap-3 cursor-pointer">
-          <h3 className="text-2xl font-light nb:1 md:mb-2">Legals</h3>
-          {/* <div className="flex gap-2 mx-4 text-white/80">
-            <p className="font-light text-xs md:text-sm">Privacy Policy</p>
+            ))}
           </div>
-          <div className="flex gap-2 mx-4 text-white/80">
-            <p className="font-light text-xs md:text-sm">Shipping Policy</p>
-          </div> */}
-          <div className="flex gap-2 mx-4 text-white/80"
-          onClick={() => navigate("/legal")
 
-          }
-          >
-            <p className="font-light text-xs md:text-sm">
-              Exchange and Refunds
+          {/* Legals */}
+          <div className="space-y-3">
+            <h3 className="text-xl font-semibold text-white mb-2">Legals</h3>
+            <p
+              onClick={() => navigate("/legal")}
+              className="text-sm text-neutral-400 hover:text-yellow-400 transition-colors cursor-pointer"
+            >
+              Exchange & Refunds
             </p>
           </div>
-          {/* <div className="flex gap-2 mx-4 text-white/80">
-            <p className="font-light text-xs md:text-sm">
-              Terms and Conditions
-            </p>
-          </div> */}
+        </div>
+
+        <Separator className="opacity-30 my-6" />
+
+        {/* --- Copyright --- */}
+        <div className="text-center text-sm text-neutral-500">
+          © {new Date().getFullYear()} {Store_Name} — All Rights Reserved.
         </div>
       </div>
-      <Separator className="w-[90%] md:w-[95%] mx-auto opacity-75 mt-4 mb-1" />
-      <div className="text-white/80 w-full">
-        <p className=" text-center mx-auto md:mx-[525px] font-extralight text-xs">
-          COPYRIGHT © 2025 {Store_Name} | All Rights Reserved
-        </p>
-      </div>
-    </div>
+    </footer>
   );
 };
 

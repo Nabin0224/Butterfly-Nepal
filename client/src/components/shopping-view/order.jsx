@@ -22,6 +22,7 @@ import { Badge } from "../ui/badge";
 import { getAllOrdersByUserOfEsewa, getOrderDetailsOfEsewa, resetOrderDetailsOfEsewa } from "../../../store/shop/esewa-slice/createorder";
 import { getAllOrdersByUserOfCod, getOrderDetailsOfCod } from "../../../store/cod-slice/index";
 
+
 const ShoppingOrders = () => {
   const { orderList, orderDetails } = useSelector(
     (state) => state.shoppingOrders
@@ -31,6 +32,7 @@ const ShoppingOrders = () => {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const { user } = useSelector(state => state.auth);
   const dispatch = useDispatch();
+  const guestId = localStorage.getItem("guestId")
 
   function handleFetchOrderDetails(getId) {
 
@@ -46,7 +48,7 @@ const ShoppingOrders = () => {
   function handleFetchOrderDetailsOfCod(getId) {
     
     // dispatch(getAllOrdersByUserOfEsewa(user?.id)); 
-    dispatch(getOrderDetailsOfCod(getId))
+    dispatch(getOrderDetailsOfCod(getId || guestId))
     
   }
 
@@ -59,9 +61,10 @@ const ShoppingOrders = () => {
   }, [orderDetails, orderDetailsOfEsewa, orderDetailsOfCod]);
 
   useEffect(() => {
-    if(user?.id)
-    dispatch(getAllOrdersByUser(user?.id));
-  }, [user?.id, dispatch]);
+    
+    if(user?.id || guestId)
+    dispatch(getAllOrdersByUser(user?.id || guestId));
+  }, [user?.id, dispatch, guestId]);
 
   useEffect(() => {
     if(user?.id)
@@ -70,9 +73,9 @@ const ShoppingOrders = () => {
   }, [user?.id, dispatch]);
 
   useEffect(() => {
-    if(user?.id)
-    dispatch(getAllOrdersByUserOfCod(user?.id));
-  }, [user?.id, dispatch]);
+    if(user?.id || guestId)
+    dispatch(getAllOrdersByUserOfCod(user?.id || guestId));
+  }, [user?.id, dispatch, guestId]);
 
   
 
