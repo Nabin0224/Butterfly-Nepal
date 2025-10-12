@@ -91,11 +91,10 @@ const Address = ({ setCurrentSelectedAddressInfo, selectedId }) => {
   }
 
   function isFormValid() {
-    return Object.values(formData).every(
-      (value) => value && value.toString().trim() !== ""
-    );
+    return Object.entries(formData) // get [key, value] pairs
+      .filter(([key]) => key !== "nearest_landmark" && key !== "email") // exclude optional field
+      .every(([_, value]) => value && value.toString().trim() !== "");
   }
-
   // delete address
   function handleDeleteAddress(address) {
     dispatch(

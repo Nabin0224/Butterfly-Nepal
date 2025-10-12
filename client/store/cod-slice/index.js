@@ -62,7 +62,8 @@ const codOrderSlice = createSlice({
                 state.isLoading = true;
             }).addCase(createCodOrder.fulfilled, (state, action) => {
                 state.isLoading= false,
-                state.formData = action.payload.data
+                state.formData = action.payload.data,
+                localStorage.removeItem("guestCart")
                 console.log(action.payload, "Redux: createCodOrder fulfilled");
 
             }).addCase(createCodOrder.rejected, (state)=>{

@@ -10,11 +10,11 @@ const shopAddressRouter = require("./routes/shop/address-routes");
 const shopOrderRouter = require("./routes/shop/order-routes");
 const shopEsewaOrderRouter = require("./routes/shop/esewa-order-routes");
 const shopCodOrderRouter = require("./routes/shop/cod-order-routes");
-const shopSubscribeRouter = require('./routes/shop/subscribe')
+const shopSubscribeRouter = require('./routes/shop/subscribe');
 const adminOrderRouter = require("./routes/admin/order-routes");
 const searchRouter = require("./routes/shop/search-routes");
 const commonFeatureRouter = require("./routes/common/feature");
-const googleauthRouter = require("./routes/google-auth-routes")
+const googleauthRouter = require("./routes/google-auth-routes");
 const adminCustomOrderRouter = require('./routes/admin/custom-order-routes')
 const adminDataRouter = require('./controllers/admin/data')
 const adminSmsRouter = require("./routes/admin/sms-routes")
@@ -42,7 +42,7 @@ app.use(bodyParser.json());
 
 app.use(
   cors({
-    origin: process.env.CLIENT_BASE_URL,
+    origin: [process.env.CLIENT_BASE_URL, process.env.CLIENT_BASE_URL_2],
     credentials: true,
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: [

@@ -2,7 +2,7 @@ const Address = require("../../models/Address");
 
 const addAddress = async (req, res) => {
   try {
-    const { fullName, address, city, nearest_landmark, phone, userId, guestId, deliveryCharge } = req.body;
+    const { fullName, address, city, nearest_landmark, phone, userId, guestId, deliveryCharge, email } = req.body;
     console.log("address Data", req.body)
 
     if ((!userId && !guestId) || !fullName || !address || !city || !phone || !deliveryCharge) {
@@ -20,6 +20,7 @@ const addAddress = async (req, res) => {
       city,
       nearest_landmark,
       phone,
+      email,
       deliveryCharge,
     });
 

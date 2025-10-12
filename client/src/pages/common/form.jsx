@@ -1,26 +1,10 @@
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
 import { Textarea } from "../../components/ui/textarea";
 import { Button } from "../../components/ui/button";
 import { useEffect, useState } from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 
 const CustomSelect = ({ getControlItem, value, setFormData, formData }) => {
   const [open, setOpen] = useState(false);
@@ -32,8 +16,6 @@ const CustomSelect = ({ getControlItem, value, setFormData, formData }) => {
     });
     setOpen(false);
   };
-  console.log(getControlItem.name)
-  console.log("formDAta address", formData)
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -49,10 +31,7 @@ const CustomSelect = ({ getControlItem, value, setFormData, formData }) => {
           <CommandInput placeholder={`Search ${getControlItem.label}...`} />
           <CommandList>
             {getControlItem.options.map((optionItem) => (
-              <CommandItem
-                key={optionItem.id}
-                onSelect={() => handleSelect(optionItem.id)}
-              >
+              <CommandItem key={optionItem.id} onSelect={() => handleSelect(optionItem.id)}>
                 {optionItem.label}
               </CommandItem>
             ))}
@@ -62,7 +41,6 @@ const CustomSelect = ({ getControlItem, value, setFormData, formData }) => {
     </Popover>
   );
 };
-
 
 function CommonForm({
   formControls,
@@ -82,59 +60,45 @@ function CommonForm({
       }));
     }
   }, [formData.city]);
-  
+
   function renderInputsByComponentType(getControlItem) {
-    let element = null;
     const value = formData[getControlItem.name] || "";
 
     switch (getControlItem.componentType) {
       case "input":
-        element = (
+        if (getControlItem.name === "phone") {
+          return (
+            <Input
+              className="border-gray-600 focus:border-blue-400 focus:outline-none"
+              name={getControlItem.name}
+              placeholder={getControlItem.placeholder}
+              id={getControlItem.name}
+              type="text"
+              value={value}
+              maxLength={10}
+              minLength={10}
+              onChange={(e) => {
+                const onlyDigits = e.target.value.replace(/\D/g, "");
+                setFormData({ ...formData, [getControlItem.name]: onlyDigits });
+              }}
+            />
+          );
+        }
+
+        return (
           <Input
-            className=" border-gray-600 focus:border-blue-400 focus:outline-none"
+            className="border-gray-600 focus:border-blue-400 focus:outline-none"
             name={getControlItem.name}
             placeholder={getControlItem.placeholder}
             id={getControlItem.name}
             type={getControlItem.type}
             value={value}
-            onChange={(event) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: event.target.value,
-              })
-            }
+            onChange={(e) => setFormData({ ...formData, [getControlItem.name]: e.target.value })}
           />
         );
-        break;
-
-      // case "select":
-      //   element = (
-      //     <Select
-      //       className=" border-gray-600 focus:border-blue-400 focus:outline-none"
-      //       onValueChange={(value) =>
-      //         setFormData({
-      //           ...formData,
-      //           [getControlItem.name]: value,
-      //         })
-      //       }
-      //       value={value}
-      //     >
-      //       <SelectTrigger className="w-full">
-      //         <SelectValue placeholder={getControlItem.label} />
-      //       </SelectTrigger>
-      //       <SelectContent>
-      //         {getControlItem.options.map((optionItem) => (
-      //           <SelectItem key={optionItem.id} value={optionItem.id}>
-      //             {optionItem.label}
-      //           </SelectItem>
-      //         ))}
-      //       </SelectContent>
-      //     </Select>
-      //   );
-      //   break;
 
       case "select":
-        element = (
+        return (
           <CustomSelect
             getControlItem={getControlItem}
             value={value}
@@ -142,138 +106,32 @@ function CommonForm({
             formData={formData}
           />
         );
-        break;
+
       case "textarea":
-        element = (
+        return (
           <Textarea
-            className=" border-gray-600 focus:border-blue-400 focus:outline-none"
+            className="border-gray-600 focus:border-blue-400 focus:outline-none"
             name={getControlItem.name}
             placeholder={getControlItem.placeholder}
             id={getControlItem.id}
             value={value}
-            onChange={(event) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: event.target.value,
-              })
-            }
+            onChange={(e) => setFormData({ ...formData, [getControlItem.name]: e.target.value })}
+            required={getControlItem.name !== "nearest_landmark"}
           />
         );
-        break;
-
-      case "color-quantity":
-        element = (
-          <div className="flex flex-col gap-2">
-            {/* Dropdown to Select Colors */}
-            <Select
-              className=" border-gray-600 focus:border-blue-400 focus:outline-none"
-              onValueChange={(selectedColorId) => {
-                const selectedColor = getControlItem.options.find(
-                  (color) => color.id === selectedColorId
-                );
-
-                if (
-                  selectedColor &&
-                  !formData.colors.some(
-                    (c) => c.colorName === selectedColor.label
-                  )
-                ) {
-                  setFormData({
-                    ...formData,
-                    colors: [
-                      ...(formData.colors || []),
-                      {
-                        colorName: selectedColor.label,
-                        code: selectedColor.code,
-                        quantity: "",
-                      },
-                    ],
-                  });
-                }
-              }}
-            >
-              <SelectTrigger className="w-full">
-                {/* <SelectValue placeholder="Select Color" /> */}
-                <span>Select Color</span>
-              </SelectTrigger>
-              <SelectContent>
-                {getControlItem.options.map((color) => (
-                  <SelectItem key={color.id} value={color.id}>
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="w-4 h-4 rounded-full border border-gray-300"
-                        style={{ backgroundColor: color.code }}
-                      ></span>
-                      {color.label}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* List of Selected Colors with Quantity Input */}
-            {formData.colors.length > 0 &&
-              formData.colors.map((color, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-3 border p-2 rounded-lg"
-                >
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="w-4 h-4 rounded-full border border-gray-300"
-                      style={{ backgroundColor: color.code }}
-                    ></span>
-                    <span className="font-semibold">{color.colorName}</span>
-                  </div>
-                  <Input
-                    type="number"
-                    placeholder="Quantity"
-                    value={color.quantity}
-                    onChange={(event) => {
-                      const newColors = [...formData.colors];
-                      newColors[index].quantity =
-                        parseInt(event.target.value, 10) || 0;
-                      setFormData({ ...formData, colors: newColors });
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() => {
-                      setFormData({
-                        ...formData,
-                        colors: formData.colors.filter((_, i) => i !== index),
-                      });
-                    }}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              ))}
-          </div>
-        );
-        break;
 
       default:
-        element = (
+        return (
           <Input
             name={getControlItem.name}
             placeholder={getControlItem.placeholder}
             id={getControlItem.name}
             type={getControlItem.type}
             value={value}
-            onChange={(event) =>
-              setFormData({
-                ...formData,
-                [getControlItem.name]: event.target.value,
-              })
-            }
+            onChange={(e) => setFormData({ ...formData, [getControlItem.name]: e.target.value })}
           />
         );
-        break;
     }
-
-    return element;
   }
 
   return (

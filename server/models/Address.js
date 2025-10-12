@@ -32,6 +32,10 @@ const AddressSchema = new mongoose.Schema({
   deliveryCharge: {
     type: Number,
     required: true
+  },
+  email: {
+    type: String,
+    required: false,
   }
 },
 {
