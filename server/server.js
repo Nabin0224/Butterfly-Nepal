@@ -40,9 +40,38 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 
 
+// app.use(
+//   cors({
+//     origin: process.env.CLIENT_BASE_URL,
+//     credentials: true,
+//     methods: ["GET", "POST", "DELETE", "PUT"],
+//     allowedHeaders: [
+//       "Content-Type",
+//       "Authorization",
+//       "Cache-Control",
+//       "Expires",
+//       "Pragma",
+//     ],
+    
+//   })
+// );
+
 app.use(
   cors({
-    origin: process.env.CLIENT_BASE_URL,
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "https://butterflynepal.com",
+        "https://www.butterflynepal.com",
+        "http://localhost:5173"
+      ];
+      // allow requests with no origin like Postman or server-to-server requests
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg = "The CORS policy for this site does not allow access from the specified Origin.";
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
     credentials: true,
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: [
@@ -52,10 +81,8 @@ app.use(
       "Expires",
       "Pragma",
     ],
-    
   })
 );
-
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
