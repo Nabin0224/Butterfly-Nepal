@@ -52,7 +52,7 @@ const AddProduct = () => {
       const updatedFormData = {
         ...formData,
         image: [...uploadedImageUrls], // Ensure uploaded images are correctly added
-        totalStock: formData.colors.reduce(
+        totalStock: (formData.colors || []).reduce(
           (sum, item) => sum + item.quantity,
           0
         ),
