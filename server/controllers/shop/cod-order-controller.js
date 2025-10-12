@@ -169,8 +169,8 @@ const mongoose = require("mongoose");
 const createCodOrder = async (req, res) => {
   try {
     const formData = req.body;
-    console.log("formData in cod", formData);
-    console.log("guestId from formData:", formData.guestId, typeof formData.guestId);
+    console.log("formData in cod order", formData);
+    console.log("guestId from formData in cod order:", formData.guestId, typeof formData.guestId);
 
     if (!formData || !formData.cartItem || !Array.isArray(formData.cartItem)) {
       return res.status(400).json({
@@ -180,41 +180,59 @@ const createCodOrder = async (req, res) => {
     }
 
     const order = new CodOrder(formData);
+    console.log("new order created in cod order")
 
     // Check stock and update product quantities
-    for (let item of order.cartItem) {
-      if (!item.productId) continue;
+    // for (let item of order.cartItem) {
+    //   if (!item.productId) continue;
 
+    //   const product = await Product.findById(item.productId);
+    //   if (!product) {
+    //     return res.status(404).json({
+    //       success: false,
+    //       message: `Product not found for id ${item.productId}`,
+    //     });
+    //   }
+
+    //   if (!Array.isArray(product.colors)) product.colors = [];
+
+    //   for (let colorItem of product.colors) {
+    //     if (colorItem.code === item.color) {
+    //       if (colorItem.quantity < item.quantity) {
+    //         return res.status(400).json({
+    //           success: false,
+    //           message: `Not enough stock for ${product.title} in color ${item.color}`,
+    //         });
+    //       }
+    //       colorItem.quantity -= item.quantity;
+    //     }
+    //   }
+
+    //   // Recalculate total stock
+    //   product.totalStock = Array.isArray(product.colors)
+    //     ? product.colors.reduce((sum, c) => sum + (c.quantity || 0), 0)
+    //     : 0;
+
+    //   product.markModified("colors");
+    //   await product.save();
+    // }
+    await Promise.all(order.cartItem.map(async (item) => {
       const product = await Product.findById(item.productId);
-      if (!product) {
-        return res.status(404).json({
-          success: false,
-          message: `Product not found for id ${item.productId}`,
-        });
-      }
-
-      if (!Array.isArray(product.colors)) product.colors = [];
-
+      if (!product) throw new Error(`Product ${item.productId} not found`);
+    
       for (let colorItem of product.colors) {
         if (colorItem.code === item.color) {
           if (colorItem.quantity < item.quantity) {
-            return res.status(400).json({
-              success: false,
-              message: `Not enough stock for ${product.title} in color ${item.color}`,
-            });
+            throw new Error(`Not enough stock for ${product.title} in color ${item.color}`);
           }
           colorItem.quantity -= item.quantity;
         }
       }
-
-      // Recalculate total stock
-      product.totalStock = Array.isArray(product.colors)
-        ? product.colors.reduce((sum, c) => sum + (c.quantity || 0), 0)
-        : 0;
-
+    
+      product.totalStock = product.colors.reduce((sum, c) => sum + c.quantity, 0);
       product.markModified("colors");
-      await product.save();
-    }
+      return product.save();
+    }));
 
     // Delete cart only if cartId exists
     if (order.cartId) {
@@ -222,7 +240,8 @@ const createCodOrder = async (req, res) => {
     }
 
     await order.save();
-    await sendOrderConfirmationEmail(order);
+  // send email without blocking
+sendOrderConfirmationEmail(order).catch(err => console.error("Email error:", err));
 
     return res.status(200).json({
       success: true,
