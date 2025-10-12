@@ -358,17 +358,30 @@ const ShoppingCheckout = () => {
     const firstName = fullName?.split(" ")[0].toUpperCase();
     console.log("firstName", firstName)
     console.log("totala", orderData.totalAmount)
-    setTimeout(() => {
-      dispatch(createCodOrder(orderData)).then((data)=> {
-        if(data.payload.success) {
-          // dispatch(sendSms({to: [orderData?.addressInfo?.phone], text:[`Dear ${firstName}, Thanks for your order at ${Store_Name}.Your order is confirmed and being processed. Reach us at butterflynepal7@gmail.com.`]}))
-          dispatch(clearCart());
-        }
-      })
-      navigate("/payment-success");
-      setIsLoading(false);
-    }, 3000);
-  }
+  //   setTimeout(() => {
+  //     dispatch(createCodOrder(orderData)).then((data)=> {
+  //       if(data.payload.success) {
+  //         // dispatch(sendSms({to: [orderData?.addressInfo?.phone], text:[`Dear ${firstName}, Thanks for your order at ${Store_Name}.Your order is confirmed and being processed. Reach us at butterflynepal7@gmail.com.`]}))
+  //         dispatch(clearCart());
+  //       }
+  //     })
+  //     navigate("/payment-success");
+  //     setIsLoading(false);
+  //   }, 3000);
+  // }
+  setIsLoading(true);
+dispatch(createCodOrder(orderData))
+  .unwrap()
+  .then((res) => {
+    dispatch(clearCart());
+    setIsLoading(false);
+    navigate("/payment-success");
+  })
+  .catch((err) => {
+    console.error("COD failed:", err);
+    setIsLoading(false);
+  });
+}
 
   return (
     <div className="flex flex-col relative">

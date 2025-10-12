@@ -12,17 +12,19 @@ const initialState = {
 
 }
 export const createCodOrder = createAsyncThunk(
-    "/createCodOrder/create",
-    async (orderData) => {
+  "/createCodOrder/create",
+  async (orderData, { rejectWithValue }) => {
+    try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/shop/codorder/createCod`,
-  
         orderData
       );
-      console.log(response.data, "API response in createCode");
-      return response.data
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { success: false, message: error.message });
     }
-  );
+  }
+);
 
 export const getAllOrdersByUserOfCod = createAsyncThunk(
     "/getAllOrdersByUserOfCod",
@@ -61,15 +63,21 @@ const codOrderSlice = createSlice({
             builder.addCase(createCodOrder.pending,(state)=> {
                 state.isLoading = true;
             }).addCase(createCodOrder.fulfilled, (state, action) => {
-                state.isLoading= false,
-                state.formData = action.payload.data,
-                localStorage.removeItem("guestCart")
-                console.log(action.payload, "Redux: createCodOrder fulfilled");
+              state.isLoading = false;
+              if (action.payload?.success) {
+                state.formData = action.payload.data;
+                localStorage.removeItem("guestCart");
+              } else {
+                state.formData = null;
+                console.error("COD order failed:", action.payload?.message);
+              }
+            
 
-            }).addCase(createCodOrder.rejected, (state)=>{
-                state.isLoading= false,
-                state.formData = null
-            })
+            }).addCase(createCodOrder.rejected, (state, action) => {
+              state.isLoading = false;
+              state.formData = null;
+              console.error("COD order rejected:", action.payload);
+            });
             builder.addCase(getAllOrdersByUserOfCod.pending,(state)=> {
                 state.isLoading = true;
             }).addCase(getAllOrdersByUserOfCod.fulfilled, (state, action) => {
