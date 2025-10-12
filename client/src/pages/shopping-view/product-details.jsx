@@ -28,6 +28,7 @@ import AuthPopup from "../../components/shopping-view/login-card";
 import { AlertDialogContent } from "@/components/ui/alert-dialog";
 import { Sheet } from "@/components/ui/sheet";
 import UserCartWrapper from "../../components/shopping-view/cart-wrapper";
+import { getGuestId } from "@/utils/guestId";
 
 const ProductDetailsPage = () => {
   const [openMobileCartSheet, setOpenMobileCartSheet] = useState(false);
@@ -106,7 +107,8 @@ const ProductDetailsPage = () => {
 
   useEffect(() => {
     dispatch(fetchProductDetails(productId.id));
-  }, [user, productId]);
+  }, [productId]);
+
   useEffect(() => {
     if (cartItemDetails) {
       setCount(cartItemDetails.quantity);
