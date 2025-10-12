@@ -42,7 +42,7 @@ app.use(bodyParser.json());
 
 app.use(
   cors({
-    origin: [process.env.CLIENT_BASE_URL, process.env.CLIENT_BASE_URL_2],
+    origin: process.env.CLIENT_BASE_URL,
     credentials: true,
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: [

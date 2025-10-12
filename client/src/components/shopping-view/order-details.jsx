@@ -24,7 +24,7 @@ const ShoppingOrderDetailsView = ({orderDetails}) => {
             </div>
             <div className="flex justify-between items-center mt-2">
                 <p className="font-medium">Order Date</p>
-                <Label>{orderDetails?.orderDate.split("T")[0]}</Label>
+                <Label>{orderDetails?.orderDate?.split("T")[0]}</Label>
             </div>
             <div className="flex justify-between items-center mt-2">
                 <p className="font-medium">Payment Method</p>

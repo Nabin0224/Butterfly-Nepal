@@ -355,7 +355,7 @@ const ShoppingCheckout = () => {
     };
     console.log("orderdata", orderData)
     const fullName = orderData?.addressInfo?.fullName;
-    const firstName = fullName.split(" ")[0].toUpperCase();
+    const firstName = fullName?.split(" ")[0].toUpperCase();
     console.log("firstName", firstName)
     console.log("totala", orderData.totalAmount)
     setTimeout(() => {

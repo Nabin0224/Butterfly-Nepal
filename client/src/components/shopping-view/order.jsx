@@ -111,7 +111,7 @@ const ShoppingOrders = () => {
               ? orders.map((item) => (
                   <TableRow >
                     <TableCell>{item._id}</TableCell>
-                    <TableCell>{item.orderDate.split("T")[0]}</TableCell>
+                    <TableCell>{item.orderDate?.split("T")[0]}</TableCell>
                     <TableCell>
                        <Badge
                                      className={`py-1 px-3 ${
