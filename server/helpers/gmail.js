@@ -11,7 +11,7 @@ const sendOrderConfirmationEmail = async (order) => {
 
   const mailOptions = {
     from: `"Online Clothing Store Nepal" <${process.env.EMAIL_USER}>`,
-    to: process.env.EMAIL_RECEIVERS.split(',').map(email => email.trim()),          // main recipients
+    to: process.env.EMAIL_RECEIVERS?.split(',').map(email => email.trim()),          // main recipients
     // cc: process.env.EMAIL_CC || "",           // optional visible copy
     // bcc: process.env.EMAIL_BCC || "",         // optional hidden copy
     subject: `🛍️ New COD Order - ${order?.addressInfo?.fullName || "Customer"}`,
