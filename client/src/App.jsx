@@ -91,7 +91,7 @@ const App = () => {
   return (
     <>
       <ScrollToTop />
-      <div className="flex flex-col">
+      <div className="flex flex-col overflow-x-hidden">
         <Routes>
           <Route
             path={ROUTES.AUTH}
