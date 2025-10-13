@@ -3,10 +3,10 @@ const Product = require("../../models/products");
 
 const addToCart = async (req, res) => {
   try {
-    const { userId, guestId, productId, quantity, color } = req.body;
+    const { userId, guestId, productId, quantity, color, size } = req.body;
     console.log("cartItem",req.body)
 
-    if ((!userId && !guestId) || !productId || !color || quantity <= 0)
+    if ((!userId && !guestId) || !productId || !color || quantity <= 0 || !size)
       return res.status(400).json({
         success: false,
         message: "Invalid data provided!",
@@ -89,6 +89,7 @@ const fetchCartItems = async (req, res) => {
       productId: item.productId._id,
       image: item.productId.image,
       title: item.productId.title,
+      size: item.size,
       price: item.productId.price,
       salePrice: item.productId.salePrice,
       quantity: item.quantity,
@@ -114,7 +115,7 @@ const updateCartItems = async (req, res) => {
   try {
     const { userId, guestId, productId, quantity, color } = req.body;
 
-    if ((!userId && !guestId) || !productId ||  !color || quantity <= 0)
+    if ((!userId && !guestId) || !productId ||  !color || quantity <= 0 || !size)
       return res.status(400).json({
         success: false,
         message: "Invalid data provided!",
@@ -153,6 +154,7 @@ const updateCartItems = async (req, res) => {
       image: item.productId ? item.productId.image : null,
       title: item.productId ? item.productId.title : "Product not found!",
       price: item.productId ? item.productId.price : null,
+      size: item.size,
       salePrice: item.productId ? item.productId.salePrice : null,
       quantity: item.quantity,
       color: item.color
@@ -211,6 +213,7 @@ const deleteCartItems = async (req, res) => {
       price: item.productId ? item.productId.price : null,
       salePrice: item.productId ? item.productId.salePrice : null,
       quantity: item.quantity,   
+      size: item.size,
     }));
     res.status(200).json({
       data: {

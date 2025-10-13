@@ -54,6 +54,7 @@ const ProductDetailsPage = () => {
     : (Array.isArray(cartItems) ? cartItems : []);
   console.log("displayed cart items", displayedCartItems);
   console.log("user cart items", cartItems);
+
   const handleCheckLogin = () => {
     if (!user) {
       toast({
@@ -131,6 +132,7 @@ const ProductDetailsPage = () => {
         item.productId === getCurrentProductId && item.color === selectedColor
     );
     console.log("selectedColor", selectedColor);
+    console.log("Product Details", productDetails)
 
     if (!user) {
       if (!selectedColor) {
@@ -149,6 +151,7 @@ const ProductDetailsPage = () => {
           color: selectedColor,
           price: productDetails.price,
           salePrice: productDetails.salePrice,
+          size: productDetails.sizes[0],
           title: productDetails.title,
           image: productDetails.image[0],
         })
@@ -378,6 +381,20 @@ const ProductDetailsPage = () => {
                   }}
                 />
               ))}
+            </div>
+          </div>
+        </div>
+        <div className="Color mb-6 md:mb-6">
+          <h2>Size : </h2>
+          <div>
+            <div className="flex gap-2 mt-3">
+          <Button
+          variant="Outline"
+          className="border-2"
+         
+          >
+            {productDetails && productDetails.sizes ? productDetails.sizes[0] : null }</Button>
+              
             </div>
           </div>
         </div>

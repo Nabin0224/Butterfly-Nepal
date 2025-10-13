@@ -24,6 +24,10 @@ items : [
     },
     color: {
         type: String
+    },
+    size: {
+        type: String,
+        required: true,
     }
 }
 ]

@@ -56,6 +56,7 @@ const addProduct = async (req, res) => {
       description,
       category,
       brand,
+      sizes,
       price,
       salePrice,
       totalStock,
@@ -68,6 +69,7 @@ const addProduct = async (req, res) => {
       description,
       category,
       brand,
+      sizes,
       price,
       salePrice,
       totalStock,
@@ -133,6 +135,7 @@ const editProduct = async (req, res) => {
       title,
       description,
       brand,
+      sizes,
       category,
       price,
       salePrice,
@@ -146,6 +149,7 @@ const editProduct = async (req, res) => {
     findProduct.title = title || findProduct.title;
     findProduct.description = description || findProduct.description;
     findProduct.brand = brand || findProduct.brand;
+    findProduct.sizes = sizes || findProduct.sizes;
     findProduct.category = category || findProduct.category;
     findProduct.price = price || findProduct.price;
     findProduct.salePrice = salePrice || findProduct.salePrice;

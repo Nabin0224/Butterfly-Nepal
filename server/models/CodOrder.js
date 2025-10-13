@@ -22,6 +22,7 @@ const CodOrderSchema = new mongoose.Schema({
             image: [],
             price: Number,
             quantity: Number,
+            size: String,
             color: String,
         }
     ],

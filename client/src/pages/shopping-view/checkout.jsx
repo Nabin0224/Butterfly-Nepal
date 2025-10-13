@@ -326,7 +326,8 @@ const ShoppingCheckout = () => {
         title: singleCartItem?.title,
         image: singleCartItem?.image,
         quantity: singleCartItem?.quantity,
-        color: singleCartItem?.color
+        color: singleCartItem?.color,
+        size: singleCartItem?.size
       })),
       userId: user?.id || null,
       guestId: localStorage.getItem("guestId") || null,

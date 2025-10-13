@@ -20,6 +20,7 @@ const initialFormData = {
   description: "",
   category: "",
   brand: "",
+  sizes: [],
   price: 0,
   salePrice: 0,
   totalStock: 0,

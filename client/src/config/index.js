@@ -84,6 +84,15 @@ export const addProductFormElements = [
     ],
   },
   {
+    label: "Sizes",
+    name: "size",
+    componentType: "select",
+    options: [
+      {id: "free size", label: "Free Size"},
+
+    ]
+  },
+  {
     label: "Price",
     name: "price",
     componentType: "input",
