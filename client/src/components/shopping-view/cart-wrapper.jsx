@@ -5,6 +5,7 @@ import UserCartItemsContent from './cart-items-content';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@radix-ui/react-dropdown-menu';
 import { useSelector } from 'react-redux';
+import { trackEvent } from '../../utils/analytics';
 
 const UserCartWrapper = ({ setOpenCartSheet, setOpenMobileCartSheet}) => {
     const  navigate = useNavigate();
@@ -22,6 +23,28 @@ const UserCartWrapper = ({ setOpenCartSheet, setOpenMobileCartSheet}) => {
         currentItem?.salePrice >  0 ? currentItem.salePrice : currentItem?.price
     ) * currentItem?.quantity, 0  )
     : 0
+
+     
+  const handleCheckout = () => {
+    // Fire Google Analytics Event
+    trackEvent('begin_checkout', {
+      currency: 'NPR',
+      value: totalCartAmount,
+      items: safeItems.map((item) => ({
+        item_id: item._id || item.id,
+        item_name: item.title,
+        item_variant: item.color,
+        price: item.salePrice || item.price,
+        quantity: item.quantity,
+      })),
+    });
+
+    // Navigate after event fires
+    navigate('/checkout');
+    setOpenCartSheet(false);
+    setOpenMobileCartSheet(false);
+  };
+
 
 
   return <SheetContent className = "w-2/3" >
@@ -44,7 +67,7 @@ const UserCartWrapper = ({ setOpenCartSheet, setOpenMobileCartSheet}) => {
             <span className="font-semibold">Rs{totalCartAmount}</span>
             </div>
         </div>
-        <Button onClick={()=>{ navigate('/checkout'); setOpenCartSheet(false); setOpenMobileCartSheet(false)}} className="w-full mt-8 ">Checkout</Button>
+        <Button onClick={handleCheckout} className="w-full mt-8 ">Checkout</Button>
         
     </SheetContent>
     

@@ -29,6 +29,7 @@ import { AlertDialogContent } from "@/components/ui/alert-dialog";
 import { Sheet } from "@/components/ui/sheet";
 import UserCartWrapper from "../../components/shopping-view/cart-wrapper";
 import { getGuestId } from "@/utils/guestId";
+import { trackEvent } from "../../utils/analytics";
 
 const ProductDetailsPage = () => {
   const [openMobileCartSheet, setOpenMobileCartSheet] = useState(false);
@@ -152,6 +153,19 @@ const ProductDetailsPage = () => {
           image: productDetails.image[0],
         })
       );
+      trackEvent('add_to_cart', {
+        currency: 'NPR',
+        value: productDetails.salePrice || productDetails.price,
+        items: [
+          {
+            item_id: getCurrentProductId,
+            item_name: productDetails.title,
+            item_variant: selectedColor,
+            price: productDetails.salePrice || productDetails.price,
+            quantity: finalQuantity,
+          },
+        ],
+      });
       toast({
         title: "Added to cart",
         duration: 2000,
