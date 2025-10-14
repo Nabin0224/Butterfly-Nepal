@@ -92,7 +92,7 @@ const ShoppingFooter = () => {
             <h3 className="text-xl font-semibold text-white mb-2">Get Connected</h3>
             <div className="flex items-center gap-2 text-neutral-400 hover:text-yellow-400 transition-colors">
               <Phone className="h-4 w-4" />
-              <p className="text-sm">9864782899</p>
+              <p className="text-sm">9863141737</p>
             </div>
             <div className="flex items-center gap-2 text-neutral-400 hover:text-yellow-400 transition-colors">
               <Mail className="h-4 w-4" />
