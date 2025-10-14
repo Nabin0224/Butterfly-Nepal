@@ -324,13 +324,15 @@ const ProductDetailsPage = () => {
     <div className="grid grid-cols-1 md:grid-cols-2  gap-2 min-w-fit m-1 p-1 md:p-2 md:m-2 h-full">
       <div className="relative rounded-lg m-1 p-1  h-full  md:p-8 flex-col gap-2">
         {productDetails?.image && productDetails?.image.length > 0 && (
-          <img
+         <div  className="imageContainer h-[700px]">
+           <img
             src={productDetails?.image[currentImageIndex]}
             alt={productDetails?.title}
-            width={600}
-            height={600}
-            className="aspect-[4/5] h-auto object-center object-cover"
+            // width={600}
+            // height={600}
+            className="aspect-[4/5] h-full object-center object-cover"
           />
+         </div>
         )}
         <div className="flex gap-2 mt-2 overflow-auto">
           {productDetails?.image && productDetails?.image.length > 0
