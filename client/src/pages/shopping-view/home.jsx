@@ -42,6 +42,7 @@ export const ShoppingHome = () => {
   useEffect(() => {
     dispatch(fetchAllFilteredProducts({ filterParams: {}, sortParams: {} }));
     dispatch(getFeatureImages());
+    sessionStorage.removeItem("filters")
   }, [dispatch]);
 
   const handleAddtoCart = (productId, totalStock) => {

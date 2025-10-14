@@ -88,6 +88,8 @@ const App = () => {
     return <div className="text-2xl font-bold content-center">Loading...</div>;
   }
 
+ 
+
   return (
     <>
       <ScrollToTop />
