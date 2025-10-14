@@ -302,7 +302,7 @@ const CreateCustomOrder = () => {
       sendSms({
         to: [data.phone],
         text: [
-          `Dear ${firstName}, Thanks for your order at ${Store_Name}. Your order is confirmed and being processed. Visit our website www.butterflynepal.com for easy shopping.`,
+          `Hi ${firstName}, your order at ${Store_Name} is confirmed. Visit www.butterflynepal.com`,
         ],
       })
     ).then((date) => {

@@ -375,7 +375,7 @@ dispatch(createCodOrder(orderData))
   .unwrap()
   .then((res) => {
     dispatch(clearCart());
-     dispatch(sendSms({to: [orderData?.addressInfo?.phone], text:[`Dear ${firstName}, Thanks for your order at ${Store_Name}.Your order is confirmed and being processed. Reach us at butterflynepal7@gmail.com.`]}))
+     dispatch(sendSms({to: [orderData?.addressInfo?.phone], text:[`Hi ${firstName}, your order at ${Store_Name} is confirmed. Visit www.butterflynepal.com`]}))
     setIsLoading(false);
     navigate("/payment-success");
   })
