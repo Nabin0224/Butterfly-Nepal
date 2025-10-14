@@ -57,9 +57,10 @@ const ShoppingOrderDetailsView = ({orderDetails}) => {
             <ul className='grid gap-3'>
                 {
                     orderDetails?.cartItem && orderDetails?.cartItem.length > 0 ?
-                    orderDetails?.cartItem.map((item)=> <li className='flex items-center justify-between'>
+                    orderDetails?.cartItem.map((item)=> <li className='flex items-center justify-between text-muted-foreground'>
                         <span>{item.title}</span>
                         <span>x {item.quantity}</span>
+                        <span>{item.size}</span>
                         <span>{item.price}</span>
                     </li>
                     ) : null

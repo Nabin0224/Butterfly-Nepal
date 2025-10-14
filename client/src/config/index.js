@@ -85,10 +85,16 @@ export const addProductFormElements = [
   },
   {
     label: "Sizes",
-    name: "size",
+    name: "sizes",
     componentType: "select",
+    multiple: true,
     options: [
-      {id: "free size", label: "Free Size"},
+      { id: "XS", label: "XS" },
+    { id: "S", label: "S" },
+    { id: "M", label: "M" },
+    { id: "L", label: "L" },
+    { id: "XL", label: "XL" },
+    { id: "Free Size", label: "Free Size" },
 
     ]
   },

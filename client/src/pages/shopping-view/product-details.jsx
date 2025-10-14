@@ -47,6 +47,7 @@ const ProductDetailsPage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showAuthPopup, setShowAuthPopup] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
+  const [selectedSize, setSelectedSize] = useState("");
 
   console.log("guestCart", guestCart);
   const displayedCartItems = user?.id
@@ -68,6 +69,7 @@ const ProductDetailsPage = () => {
       setShowAuthPopup(true);
     }
   };
+
 
   const { productList, productDetails } = useSelector(
     (state) => state.shoppingProducts
@@ -137,7 +139,15 @@ const ProductDetailsPage = () => {
     if (!user) {
       if (!selectedColor) {
         toast({
-          title: "Please choode a color!",
+          title: "Please choose a color!",
+          variant: "destructive",
+          duration: 1000,
+        });
+        return;
+      }
+      if (!selectedSize) {
+        toast({
+          title: "Please choose a size!",
           variant: "destructive",
           duration: 1000,
         });
@@ -151,7 +161,7 @@ const ProductDetailsPage = () => {
           color: selectedColor,
           price: productDetails.price,
           salePrice: productDetails.salePrice,
-          size: productDetails.sizes[0],
+          size: selectedSize,
           title: productDetails.title,
           image: productDetails.image[0],
         })
@@ -227,6 +237,7 @@ const ProductDetailsPage = () => {
           productId: getCurrentProductId,
           quantity: finalQuantity,
           color: selectedColor,
+          size: selectedSize
         })
       ).then((data) => {
         if (data?.payload?.success) {
@@ -303,6 +314,7 @@ const ProductDetailsPage = () => {
         userId: user?.id,
         productId: getCartItem?.productId,
         color: selectedColor,
+        size: selectedSize,
         quantity: updatedQuantity,
       })
     ).then(() => dispatch(fetchCartItems(user?.id)));
@@ -388,12 +400,21 @@ const ProductDetailsPage = () => {
           <h2>Size : </h2>
           <div>
             <div className="flex gap-2 mt-3">
-          <Button
-          variant="Outline"
-          className="border-2"
          
-          >
-            {productDetails && productDetails.sizes ? productDetails.sizes[0] : null }</Button>
+          
+            {productDetails && productDetails.sizes.length > 0 
+            ? productDetails.sizes.map((size)=> 
+              <Button
+            variant="Outline"
+            className={`border-2 ${ selectedSize === size ? 'border-black text-black': 'border-gray-400 text-gray-400' }`}
+            onClick={() => setSelectedSize(size)}
+           >
+              {size}
+            
+              </Button>
+            )
+          : null
+          }
               
             </div>
           </div>
@@ -519,7 +540,7 @@ const ProductDetailsPage = () => {
                     productDetails?._id,
                     productDetails?.totalStock
                   );
-                  selectedColor && setOpenCartSheet(true);
+                  selectedSize && selectedColor && setOpenCartSheet(true);
                 }}
                 className="w-full rounded-sm"
               >
