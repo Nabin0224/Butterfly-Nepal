@@ -17,10 +17,7 @@ import {
   fetchAllFilteredProducts,
   fetchProductDetails,
 } from "../../../store/shop/product-slice";
-import {
-  addToCart,
-  fetchCartItems,
-} from "../../../store/shop/cart-slice";
+import { addToCart, fetchCartItems } from "../../../store/shop/cart-slice";
 import { useToast } from "@/hooks/use-toast";
 import { sortOptions } from "@/config/index";
 
@@ -144,9 +141,9 @@ function ShoppingListing() {
   }, [dispatch, filters, sort]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6 p-4 md:p-8 bg-gray-50 min-h-screen">
+    <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-2 md:gap-6 p-4 md:p-8 bg-gray-50 min-h-screen">
       {/* Left Sidebar */}
-      <div className="hidden md:block bg-white rounded-xl shadow-md p-4">
+      <div className=" md:block bg-white rounded-xl shadow-md p-4">
         <ProductFilter filters={filters} handleFilter={handleFilter} />
       </div>
 
@@ -154,9 +151,7 @@ function ShoppingListing() {
       <div className="bg-white rounded-xl shadow-md flex flex-col">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-center border-b p-4 md:p-6 gap-3">
-          <h2 className="text-xl font-semibold tracking-tight">
-            All Products
-          </h2>
+          <h2 className="text-xl font-semibold tracking-tight">All Products</h2>
           <div className="flex items-center gap-4">
             <span className="hidden md:block text-sm text-gray-500">
               {productList.length} Products

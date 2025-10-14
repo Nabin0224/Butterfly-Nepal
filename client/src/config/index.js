@@ -299,8 +299,8 @@ export const filterOptions = {
     // { id: "accessories", label: "Accessories" },
     // { id: "footwear", label: "Footwear" },
   ],
-  brand: [
-    { id: "no brand", label: "No Brand" },
+  // brand: [
+  //   { id: "no brand", label: "No Brand" },
    
-  ],
+  // ],
 };
