@@ -10,7 +10,7 @@ import { createEsewaOrder } from "../../../store/shop/esewa-slice/createorder";
 import axios from "axios";
 import { Separator } from "@/components/ui/separator";
 import { Accordion } from "@radix-ui/react-accordion";
-import esewa from "../../../src/assets/logo/esewa.png"
+import esewa from "../../../src/assets/logo/esewa.png";
 import {
   AccordionContent,
   AccordionItem,
@@ -19,12 +19,22 @@ import {
 import { createCodOrder } from "../../../store/cod-slice/index";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Navigate, useNavigate } from "react-router-dom";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogTitle, AlertDialogTrigger } from   "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { AlertDialogHeader } from "@/components/ui/alert-dialog";
 import { sendSms } from "../../../store/admin/sms-slice/index";
 import { fetchAllAddress } from "../../../store/shop/address-slice/index";
 import { Store_Name } from "../../utils/constants/storeConstants";
 import { clearCart } from "../../../store/shop/cart-slice/index";
+import { Card } from "@/components/ui/card";
 
 const ShoppingCheckout = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -34,14 +44,18 @@ const ShoppingCheckout = () => {
   const { approvalURL } = useSelector((state) => state.shoppingOrders);
   const [currentSelectedAddressInfo, setCurrentSelectedAddressInfo] =
     useState(null);
+  const [promoCode, setPromoCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+  const [error, setError] = useState("");
   const [isPayPalPaymentStart, setIsPaypalPaymentStart] = useState(false);
   const [isEsewaPaymentStart, setIsEsewaPaymentStart] = useState(false);
   const dispatch = useDispatch();
   const { formData } = useSelector((state) => state.esewaOrders);
 
- console.log("current selected", currentSelectedAddressInfo)
+  console.log("current selected", currentSelectedAddressInfo);
   const alwaysOpenItems = ["item-1"];
   const [openItems, setOpenItems] = useState(alwaysOpenItems);
+  const [isPromoApplied, setIsPromoApplied] = useState(false);
   const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState("");
@@ -49,6 +63,44 @@ const ShoppingCheckout = () => {
     // Open the accordion when the component mounts (first render)
     setIsOpen("item-1");
   });
+
+  function handleApplyPromo() {
+    const code = promoCode.trim().toUpperCase();
+    const promoUsedBefore =
+      user?.promoUsed ||
+      JSON.parse(localStorage.getItem("usedPromo") || "false");
+    if (promoUsedBefore || isPromoApplied) {
+      toast({
+        title: "Promo code already used!",
+        description: "You can only use it once",
+        variant: "destructive",
+        duration: 2000,
+      });
+      return;
+    }
+
+    if (code === "BUTTERFLYNEPAL15") {
+      setDiscount(15);
+      setIsPromoApplied(true);
+      setError("");
+      localStorage.setItem("usedPromo", "true");
+
+      toast({
+        title: "Promo Appied!",
+        description: "You got 15% off your total 🎉",
+        duration: 2000,
+      });
+    } else {
+      setDiscount(0);
+      setError("Invalid Promo Code");
+      toast({
+        title: "Invalid Code!",
+        description: "Please try again",
+        variant: "destructive",
+        duration: 2000,
+      });
+    }
+  }
 
   //logic for total amount in cart
   const orderDate = new Date();
@@ -61,28 +113,28 @@ const ShoppingCheckout = () => {
     minute: "2-digit",
     hour12: true,
   }).format(orderDate);
-  
+
   console.log(nepalTime); // Output: "2025-04-02"
 
   useEffect(() => {
     if (!user?.id) return;
-    dispatch(fetchAllAddress(user.id)).then((data)=> {
-     console.log("data in useeffect", data)
-     const list = data?.payload?.data;
-     if(list && list.length > 0 && !currentSelectedAddressInfo) {
-       setCurrentSelectedAddressInfo(list[0]);
-     }
-    })
-   }, [dispatch, user?.id]);
-
-  
-   
-
+    dispatch(fetchAllAddress(user.id)).then((data) => {
+      console.log("data in useeffect", data);
+      const list = data?.payload?.data;
+      if (list && list.length > 0 && !currentSelectedAddressInfo) {
+        setCurrentSelectedAddressInfo(list[0]);
+      }
+    });
+  }, [dispatch, user?.id]);
 
   // Normalize items for guest vs logged-in
   const normalizedItems = user?.id
-    ? (cartItems && cartItems.items ? cartItems.items : [])
-    : (Array.isArray(cartItems) ? cartItems : []);
+    ? cartItems && cartItems.items
+      ? cartItems.items
+      : []
+    : Array.isArray(cartItems)
+    ? cartItems
+    : [];
 
   const totalCartAmount =
     normalizedItems && normalizedItems.length > 0
@@ -96,7 +148,10 @@ const ShoppingCheckout = () => {
           0
         )
       : 0;
-      console.log("totalCartAmount", totalCartAmount)
+  console.log("totalCartAmount", totalCartAmount);
+  const discountAmount = (totalCartAmount * discount) / 100;
+  const finalTotalCartAmount =
+    Math.ceil((totalCartAmount - discountAmount) / 10) * 10;
 
   //function to handle paypal payment
   function handleInitiatePaypalPayment() {
@@ -119,7 +174,7 @@ const ShoppingCheckout = () => {
 
     const orderData = {
       userId: user?.id || null,
-      cartId: user?.id ? (cartItems?._id || null) : null,
+      cartId: user?.id ? cartItems?._id || null : null,
       cartItem: normalizedItems.map((singleCartItem) => ({
         productId: singleCartItem?.productId,
         price:
@@ -130,21 +185,23 @@ const ShoppingCheckout = () => {
         image: singleCartItem?.image,
         quantity: singleCartItem?.quantity,
       })),
-      addressInfo: user?.id ? {
-        fullName: currentSelectedAddressInfo?.fullName,
-        addressId: currentSelectedAddressInfo?._id,
-        address: currentSelectedAddressInfo?.address,
-        city: currentSelectedAddressInfo?.city,
-        nearest_landmark: currentSelectedAddressInfo?.nearest_landmark,
-        phone: currentSelectedAddressInfo?.phone,
-      } : {
-        fullName: currentSelectedAddressInfo?.fullName,
-        addressId: null,
-        address: currentSelectedAddressInfo?.address,
-        city: currentSelectedAddressInfo?.city,
-        nearest_landmark: currentSelectedAddressInfo?.nearest_landmark,
-        phone: currentSelectedAddressInfo?.phone,
-      },
+      addressInfo: user?.id
+        ? {
+            fullName: currentSelectedAddressInfo?.fullName,
+            addressId: currentSelectedAddressInfo?._id,
+            address: currentSelectedAddressInfo?.address,
+            city: currentSelectedAddressInfo?.city,
+            nearest_landmark: currentSelectedAddressInfo?.nearest_landmark,
+            phone: currentSelectedAddressInfo?.phone,
+          }
+        : {
+            fullName: currentSelectedAddressInfo?.fullName,
+            addressId: null,
+            address: currentSelectedAddressInfo?.address,
+            city: currentSelectedAddressInfo?.city,
+            nearest_landmark: currentSelectedAddressInfo?.nearest_landmark,
+            phone: currentSelectedAddressInfo?.phone,
+          },
       orderStatus: "pending",
       paymentMethod: "paypal",
       paymentStatus: "pending",
@@ -152,7 +209,7 @@ const ShoppingCheckout = () => {
       orderUpdateDate: nepalTime,
       paymentId: "",
       payerId: "",
-      totalAmount: totalCartAmount,
+      totalAmount: finalTotalCartAmount,
     };
 
     setIsPaypalPaymentStart(true);
@@ -205,28 +262,30 @@ const ShoppingCheckout = () => {
           quantity: singleCartItem?.quantity,
         })),
         userId: user?.id || null,
-        cartId: user?.id ? (cartItems?._id || null) : null,
+        cartId: user?.id ? cartItems?._id || null : null,
         orderDate: nepalTime,
         orderUpdateDate: nepalTime,
-        addressInfo: user?.id ? {
-          fullName: currentSelectedAddressInfo?.fullName,
-          addressId: currentSelectedAddressInfo?._id,
-          address: currentSelectedAddressInfo?.address,
-          city: currentSelectedAddressInfo?.city,
-          nearest_landmark: currentSelectedAddressInfo?.nearest_landmark,
-          phone: currentSelectedAddressInfo?.phone,
-        } : {
-          fullName: currentSelectedAddressInfo?.fullName,
-          addressId: null,
-          address: currentSelectedAddressInfo?.address,
-          city: currentSelectedAddressInfo?.city,
-          nearest_landmark: currentSelectedAddressInfo?.nearest_landmark,
-          phone: currentSelectedAddressInfo?.phone,
-        },
+        addressInfo: user?.id
+          ? {
+              fullName: currentSelectedAddressInfo?.fullName,
+              addressId: currentSelectedAddressInfo?._id,
+              address: currentSelectedAddressInfo?.address,
+              city: currentSelectedAddressInfo?.city,
+              nearest_landmark: currentSelectedAddressInfo?.nearest_landmark,
+              phone: currentSelectedAddressInfo?.phone,
+            }
+          : {
+              fullName: currentSelectedAddressInfo?.fullName,
+              addressId: null,
+              address: currentSelectedAddressInfo?.address,
+              city: currentSelectedAddressInfo?.city,
+              nearest_landmark: currentSelectedAddressInfo?.nearest_landmark,
+              phone: currentSelectedAddressInfo?.phone,
+            },
         orderStatus: "pending",
         paymentMethod: "eSewa",
         paymentStatus: "pending",
-        totalAmount: totalCartAmount.toString(),
+        totalAmount: finalTotalCartAmount.toString(),
       };
       const { payload } = await dispatch(createEsewaOrder(orderData));
       setIsEsewaPaymentStart(false);
@@ -296,7 +355,7 @@ const ShoppingCheckout = () => {
   //<-------------------------------------------------------------------->
 
   // Cod initialization
-  
+
   function handleCodPayment() {
     if (normalizedItems.length == 0) {
       toast({
@@ -315,7 +374,7 @@ const ShoppingCheckout = () => {
       return;
     }
     setIsLoading(true);
-    console.log("normalizedItems in checkout", normalizedItems )
+    console.log("normalizedItems in checkout", normalizedItems);
     const orderData = {
       cartItem: normalizedItems.map((singleCartItem) => ({
         productId: singleCartItem?.productId,
@@ -327,63 +386,74 @@ const ShoppingCheckout = () => {
         image: singleCartItem?.image,
         quantity: singleCartItem?.quantity,
         color: singleCartItem?.color,
-        size: singleCartItem?.size
+        size: singleCartItem?.size,
       })),
       userId: user?.id || null,
       guestId: localStorage.getItem("guestId") || null,
-      cartId: user?.id ? (cartItems?._id || null) : null,
+      cartId: user?.id ? cartItems?._id || null : null,
       orderDate: nepalTime,
       orderUpdateDate: nepalTime,
-      addressInfo: user?.id ? {
-        fullName: currentSelectedAddressInfo?.fullName,
-        addressId: currentSelectedAddressInfo?._id,
-        address: currentSelectedAddressInfo?.address,
-        city: currentSelectedAddressInfo?.city,
-        nearest_landmark: currentSelectedAddressInfo?.nearest_landmark,
-        phone: currentSelectedAddressInfo?.phone,
-      } : {
-        fullName: currentSelectedAddressInfo?.fullName,
-        addressId: null,
-        address: currentSelectedAddressInfo?.address,
-        city: currentSelectedAddressInfo?.city,
-        nearest_landmark: currentSelectedAddressInfo?.nearest_landmark,
-        phone: currentSelectedAddressInfo?.phone,
-      },
+      addressInfo: user?.id
+        ? {
+            fullName: currentSelectedAddressInfo?.fullName,
+            addressId: currentSelectedAddressInfo?._id,
+            address: currentSelectedAddressInfo?.address,
+            city: currentSelectedAddressInfo?.city,
+            nearest_landmark: currentSelectedAddressInfo?.nearest_landmark,
+            phone: currentSelectedAddressInfo?.phone,
+          }
+        : {
+            fullName: currentSelectedAddressInfo?.fullName,
+            addressId: null,
+            address: currentSelectedAddressInfo?.address,
+            city: currentSelectedAddressInfo?.city,
+            nearest_landmark: currentSelectedAddressInfo?.nearest_landmark,
+            phone: currentSelectedAddressInfo?.phone,
+          },
       orderStatus: "pending",
       paymentMethod: "cod",
       paymentStatus: "cod",
-      totalAmount: totalCartAmount + (currentSelectedAddressInfo?.deliveryCharge || 0)
+      totalAmount:
+        finalTotalCartAmount +
+        (currentSelectedAddressInfo?.deliveryCharge || 0),
     };
-    console.log("orderdata", orderData)
+    console.log("orderdata", orderData);
     const fullName = orderData?.addressInfo?.fullName;
     const firstName = fullName?.split(" ")[0].toUpperCase();
-    console.log("firstName", firstName)
-    console.log("totala", orderData.totalAmount)
-  //   setTimeout(() => {
-  //     dispatch(createCodOrder(orderData)).then((data)=> {
-  //       if(data.payload.success) {
-  //         // dispatch(sendSms({to: [orderData?.addressInfo?.phone], text:[`Dear ${firstName}, Thanks for your order at ${Store_Name}.Your order is confirmed and being processed. Reach us at butterflynepal7@gmail.com.`]}))
-  //         dispatch(clearCart());
-  //       }
-  //     })
-  //     navigate("/payment-success");
-  //     setIsLoading(false);
-  //   }, 3000);
-  // }
-  setIsLoading(true);
-dispatch(createCodOrder(orderData))
-  .unwrap()
-  .then((res) => {
-    dispatch(clearCart());
-     dispatch(sendSms({to: [orderData?.addressInfo?.phone], text:[`Hi ${firstName}, your order at ${Store_Name} is confirmed. Visit www.butterflynepal.com`]}))
-    setIsLoading(false);
-    navigate("/payment-success");
-  })
-  .catch((err) => {
-    console.error("COD failed:", err);
-    setIsLoading(false);
-  });
-}
+    console.log("firstName", firstName);
+    console.log("totala", orderData.totalAmount);
+    //   setTimeout(() => {
+    //     dispatch(createCodOrder(orderData)).then((data)=> {
+    //       if(data.payload.success) {
+    //         // dispatch(sendSms({to: [orderData?.addressInfo?.phone], text:[`Dear ${firstName}, Thanks for your order at ${Store_Name}.Your order is confirmed and being processed. Reach us at butterflynepal7@gmail.com.`]}))
+    //         dispatch(clearCart());
+    //       }
+    //     })
+    //     navigate("/payment-success");
+    //     setIsLoading(false);
+    //   }, 3000);
+    // }
+    setIsLoading(true);
+    dispatch(createCodOrder(orderData))
+      .unwrap()
+      .then((res) => {
+        dispatch(clearCart());
+        dispatch(
+          sendSms({
+            to: [orderData?.addressInfo?.phone],
+            text: [
+              `Hi ${firstName}, your order at ${Store_Name} is confirmed. Visit www.butterflynepal.com`,
+            ],
+          })
+        );
+        setIsLoading(false);
+        navigate("/payment-success");
+      })
+      .catch((err) => {
+        console.error("COD failed:", err);
+        setIsLoading(false);
+      });
+  }
 
   return (
     <div className="flex flex-col relative">
@@ -418,7 +488,9 @@ dispatch(createCodOrder(orderData))
                   <div className="mt-8 space-y-4">
                     <div className="flex justify-between">
                       <span className="font-bold">Total</span>
-                      <span className="font-semibold">Rs{totalCartAmount}</span>
+                      <span className="font-semibold">
+                        Rs{finalTotalCartAmount}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -440,14 +512,52 @@ dispatch(createCodOrder(orderData))
               </AccordionContent>
             </AccordionItem>
           </Accordion>
+          <Card className="mb-6 md:my-6 md:mx-2">
+          <div className="space-y-3 m-4 ">
+            {/* <div className="flex justify-between">
+              <span className="font-bold text-muted-foreground">Subtotal</span>
+              <span className="font-semibold text-muted-foreground">Rs {totalCartAmount}</span>
+            </div> */}
+            
+
+            {/* Promo code input */}
+            <div className="flex gap-2 items-center">
+              <input
+                type="text"
+                placeholder="Enter promo code"
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value)}
+                className="border rounded-md px-2 py-1 w-full text-sm"
+              />
+              <Button onClick={handleApplyPromo} disabled={isPromoApplied}>
+                Apply
+              </Button>
+            </div>
+
+            {discount > 0 && (
+              <div className="flex justify-between text-green-600 text-sm">
+                <span>Discount ({discount}%):</span>
+                <span>- Rs {discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+
+            <div className="flex justify-between text-lg font-semibold">
+              <span className="text-muted-foreground">Total</span>
+              <span className="text-muted-foreground">Rs {finalTotalCartAmount.toFixed(2)}</span>
+            </div>
+          </div>
+          </Card>
+         
 
           <Accordion type="single" collapsible value={isOpen}>
             <AccordionItem value="item-1">
-              <AccordionTrigger className="bg-[#D0D0D0] text-2xl md:text-3xl tracking-wide font-thin m-2 px-4">
+              <AccordionTrigger className="bg-[#D0D0D0] text-2xl md:text-3xl tracking-wide font-thin  px-4">
                 Payment Methods
               </AccordionTrigger>
               <AccordionContent>
-                <div className="mt-4 w-full flex h-[100px] justify-around">
+                <div className="w-full flex h-[100px] justify-around">
                   {/* <Button
                     onClick={handleInitiatePaypalPayment}
                     className={` w-full bg-[#F0F0F0]/80 text-black {${isPayPalPaymentStart} ? bg-[#F0F0F0]/50 :  bg-[#F0F0F0]}`}
@@ -470,33 +580,44 @@ dispatch(createCodOrder(orderData))
                   </Button> */}
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                    <Button
-                  variant="outline"
-                    
-                    className={`hover:scale-105 transition-all duration-200 w-full h-[80px] m-4 text-black ${
-                      isLoading ? "bg-[#F0F0F0]/90" : "bg-[#F0F0F0]"
-                    } relative`}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <Skeleton className="absolute inset-0 h-full w-full rounded-full" />
-                    ) : (
-                      <h1 className=" font-semibold text-xl md:text-2xl text-green-600">Cash on Delivery</h1>
-                    )}
-                  </Button>
+                      <Button
+                        variant="outline"
+                        className={`hover:scale-105 transition-all duration-200 w-full h-[80px] m-4 text-black ${
+                          isLoading ? "bg-[#F0F0F0]/90" : "bg-[#F0F0F0]"
+                        } relative`}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? (
+                          <Skeleton className="absolute inset-0 h-full w-full rounded-full" />
+                        ) : (
+                          <h1 className=" font-semibold text-xl md:text-2xl text-green-600">
+                            Cash on Delivery
+                          </h1>
+                        )}
+                      </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Click Proceed to place order</AlertDialogTitle>
-                        </AlertDialogHeader>
-                        <AlertDialogDescription className="font-xs md:font-sm">Review your items to avoid exchanges😊</AlertDialogDescription>
-                        <AlertDialogFooter>
-                        <AlertDialogCancel className="bg-red-500 text-white hover:bg-red-300 rounded-sm p-1" >Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleCodPayment} className="bg-green-500 text-white hover:bg-green-300 rounded-sm p-1 mr-1" >Proceed</AlertDialogAction>
-                        </AlertDialogFooter>
+                        <AlertDialogTitle>
+                          Click Proceed to place order
+                        </AlertDialogTitle>
+                      </AlertDialogHeader>
+                      <AlertDialogDescription className="font-xs md:font-sm">
+                        Review your items to avoid exchanges😊
+                      </AlertDialogDescription>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="bg-red-500 text-white hover:bg-red-300 rounded-sm p-1">
+                          Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleCodPayment}
+                          className="bg-green-500 text-white hover:bg-green-300 rounded-sm p-1 mr-1"
+                        >
+                          Proceed
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
-                 
                 </div>
               </AccordionContent>
             </AccordionItem>
