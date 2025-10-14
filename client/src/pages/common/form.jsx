@@ -302,6 +302,10 @@ function CommonForm({
             placeholder={getControlItem.placeholder}
             id={getControlItem.id}
             value={value}
+            OnInput={(e) => {
+              e.target.style.height = "auto";
+              // e.target.style.height = `${e.target.scrollHeight}px`;
+            }}
             onChange={(event) =>
               setFormData({
                 ...formData,

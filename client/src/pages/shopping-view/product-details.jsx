@@ -48,11 +48,16 @@ const ProductDetailsPage = () => {
   const [showAuthPopup, setShowAuthPopup] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
   const [selectedSize, setSelectedSize] = useState("");
+  const [showMore, setShowMore] = useState(false);
 
   console.log("guestCart", guestCart);
   const displayedCartItems = user?.id
-    ? (cartItems && cartItems.items ? cartItems.items : [])
-    : (Array.isArray(cartItems) ? cartItems : []);
+    ? cartItems && cartItems.items
+      ? cartItems.items
+      : []
+    : Array.isArray(cartItems)
+    ? cartItems
+    : [];
   console.log("displayed cart items", displayedCartItems);
   console.log("user cart items", cartItems);
 
@@ -69,7 +74,6 @@ const ProductDetailsPage = () => {
       setShowAuthPopup(true);
     }
   };
-
 
   const { productList, productDetails } = useSelector(
     (state) => state.shoppingProducts
@@ -91,10 +95,9 @@ const ProductDetailsPage = () => {
 
   useEffect(() => {
     if (productDetails?.colors && productDetails?.colors.length > 0) {
-      setSelectedColor(productDetails.colors[0].colorName)
+      setSelectedColor(productDetails.colors[0].colorName);
     }
-  }, [productDetails])
-  
+  }, [productDetails]);
 
   console.log("productDetals", productDetails);
   console.log("cartItems in product details", cartItems);
@@ -134,7 +137,7 @@ const ProductDetailsPage = () => {
         item.productId === getCurrentProductId && item.color === selectedColor
     );
     console.log("selectedColor", selectedColor);
-    console.log("Product Details", productDetails)
+    console.log("Product Details", productDetails);
 
     if (!user) {
       if (!selectedColor) {
@@ -166,8 +169,8 @@ const ProductDetailsPage = () => {
           image: productDetails.image[0],
         })
       );
-      trackEvent('add_to_cart', {
-        currency: 'NPR',
+      trackEvent("add_to_cart", {
+        currency: "NPR",
         value: productDetails.salePrice || productDetails.price,
         items: [
           {
@@ -237,7 +240,7 @@ const ProductDetailsPage = () => {
           productId: getCurrentProductId,
           quantity: finalQuantity,
           color: selectedColor,
-          size: selectedSize
+          size: selectedSize,
         })
       ).then((data) => {
         if (data?.payload?.success) {
@@ -324,15 +327,15 @@ const ProductDetailsPage = () => {
     <div className="grid grid-cols-1 md:grid-cols-2  gap-2 min-w-fit m-1 p-1 md:p-2 md:m-2 h-full">
       <div className="relative rounded-lg m-1 p-1  h-full  md:p-8 flex-col gap-2">
         {productDetails?.image && productDetails?.image.length > 0 && (
-         <div  className="imageContainer h-[700px]">
-           <img
-            src={productDetails?.image[currentImageIndex]}
-            alt={productDetails?.title}
-            // width={600}
-            // height={600}
-            className="aspect-[4/5] h-full object-center object-cover"
-          />
-         </div>
+          <div className="imageContainer h-[700px]">
+            <img
+              src={productDetails?.image[currentImageIndex]}
+              alt={productDetails?.title}
+              // width={600}
+              // height={600}
+              className="aspect-[4/5] h-full object-center object-cover"
+            />
+          </div>
         )}
         <div className="flex gap-2 mt-2 overflow-auto">
           {productDetails?.image && productDetails?.image.length > 0
@@ -346,7 +349,8 @@ const ProductDetailsPage = () => {
                   height={50}
                   className={`aspect-square rounded-sm object-center object-cover transition-all duration-200 ${
                     currentImageIndex === index
-                      ? "border-4 border-black scale-110" : "border border-gray-200"
+                      ? "border-4 border-black scale-110"
+                      : "border border-gray-200"
                   } `}
                 />
               ))
@@ -358,9 +362,6 @@ const ProductDetailsPage = () => {
           <h1 className="text-2xl md:text-4xl  font-[300] stroke-none  mb-4 md:mb-12">
             {productDetails?.title}
           </h1>
-          <p className="text-sm font-extralight text-black/70 md:text-2xl mb-4 md:mb-5">
-            {productDetails?.description}
-          </p>
         </div>
         <div className="flex items-center gap-6 mb-6 md:mb-8">
           <p
@@ -402,22 +403,21 @@ const ProductDetailsPage = () => {
           <h2>Size : </h2>
           <div>
             <div className="flex gap-2 mt-3">
-         
-          
-            {productDetails && productDetails.sizes.length > 0 
-            ? productDetails.sizes.map((size)=> 
-              <Button
-            variant="Outline"
-            className={`border-2 ${ selectedSize === size ? 'border-black text-black': 'border-gray-400 text-gray-400' }`}
-            onClick={() => setSelectedSize(size)}
-           >
-              {size}
-            
-              </Button>
-            )
-          : null
-          }
-              
+              {productDetails && productDetails.sizes.length > 0
+                ? productDetails.sizes.map((size) => (
+                    <Button
+                      variant="Outline"
+                      className={`border-2 ${
+                        selectedSize === size
+                          ? "border-black text-black"
+                          : "border-gray-400 text-gray-400"
+                      }`}
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      {size}
+                    </Button>
+                  ))
+                : null}
             </div>
           </div>
         </div>
@@ -467,8 +467,27 @@ const ProductDetailsPage = () => {
             <span className="sr-only">Increase</span>
           </Button>
         </div>
-
-        <Accordion type="single" collapsible className="w-full mt-6 mb-4">
+        <div className="description mt-10">
+        <h2>Description</h2>
+          <p className="text-xs font-extralight text-black/70 md:text-xl mb-4 md:mb-5 whitespace-pre-wrap mt-2">
+            <p
+              className={` ${
+                showMore ? "max-h-full" : "max-h-24 overflow-hidden"
+              }`}
+            >
+              {productDetails?.description}
+            </p>
+            {productDetails?.description.length > 120 && (
+              <button
+                onClick={() => setShowMore(!showMore)}
+                className=" text-yellow-600 font-medium mt-2"
+              >
+                {showMore ? "Show Less" : "Read More.."}
+              </button>
+            )}
+          </p>
+        </div>
+        <Accordion type="single" collapsible className="w-full mt-2 md:mt-6 mb-4">
           <AccordionItem value="item-1">
             <AccordionTrigger className="font-thin text-md md:text-2xl text-black/60 tracking-wide  hover:no-underline focus:no-underline">
               Shipping Policy
