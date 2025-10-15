@@ -527,7 +527,7 @@ const ShoppingCheckout = () => {
                 placeholder="Enter promo code"
                 value={promoCode}
                 onChange={(e) => setPromoCode(e.target.value)}
-                className="border rounded-md px-2 py-1 w-full text-sm"
+                className="border rounded-md px-2 py-1 w-full text-lg"
               />
               <Button onClick={handleApplyPromo} disabled={isPromoApplied}>
                 Apply

@@ -118,7 +118,7 @@ export const ShoppingHome = () => {
             </span>{" "}
             on First Purchase
           </h1>
-          <p className="text-[13px] md:text-xl mb-6 mt-6 md:mt-4 opacity-90">
+          <p className="text-[15px] md:text-xl mb-6 mt-6 md:mt-4 opacity-90">
             Use promo code <span className="text-yellow-200 font-normal">"BUTTERFLYNEPAL15"</span> and enjoy discounts.
           </p>
           <Button
