@@ -33,7 +33,7 @@ const addToCart = async (req, res) => {
       (item) => item.productId.toString() === productId && item.color == color
     );
     if (findCurrentProductIndex === -1) {
-      cart.items.push({ productId, quantity, color });
+      cart.items.push({ productId, quantity, color, size });
     } else {
       cart.items[findCurrentProductIndex].quantity = quantity;
     }
@@ -47,7 +47,7 @@ const addToCart = async (req, res) => {
     console.log(error);
     res.status(500).json({
       success: false,
-      message: "Error",
+      message: error,
     });
   }
 };

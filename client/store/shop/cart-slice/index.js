@@ -12,10 +12,10 @@ const initialState = {
 // --- Thunks ---
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
-  async ({ userId, productId, quantity, color }) => {
+  async ({ userId, productId, quantity, color, size }) => {
     const payload = userId
-      ? { userId, productId, quantity, color }
-      : { guestId: getGuestId(), productId, quantity, color };
+      ? { userId, productId, quantity, color, size }
+      : { guestId: getGuestId(), productId, quantity, color, size };
     const response = await axios.post(`${API}/api/shop/cart/add`, payload);
     return response.data;
   }
@@ -25,10 +25,10 @@ export const fetchCartItems = createAsyncThunk(
   "cart/fetchCartItems",
   async (userId) => {
     if (userId) {
-      return (await axios.get(`${API}/cart/get/${userId}`)).data;
+      return (await axios.get(`${API}/api/shop/cart/get/${userId}`)).data;
     } else {
       const gid = getGuestId();
-      return (await axios.get(`${API}/cart/get`, { params: { guestId: gid } })).data;
+      return (await axios.get(`${API}/api/shop/cart/get`, { params: { guestId: gid } })).data;
     }
   }
 );
@@ -39,7 +39,7 @@ export const updateCartQuantity = createAsyncThunk(
     const payload = userId
       ? { userId, productId, quantity, color }
       : { guestId: getGuestId(), productId, quantity, color };
-    const response = await axios.put(`${API}/cart/update-cart`, payload);
+    const response = await axios.put(`${API}/api/shop/cart/update-cart`, payload);
     return response.data;
   }
 );
@@ -48,10 +48,10 @@ export const deleteCartItems = createAsyncThunk(
   "cart/deleteCartItems",
   async ({ userId, productId }) => {
     if (userId) {
-      return (await axios.delete(`${API}/cart/delete-cart/${userId}/${productId}`)).data;
+      return (await axios.delete(`${API}/api/shop/cart/delete-cart/${userId}/${productId}`)).data;
     } else {
       const gid = getGuestId();
-      return (await axios.delete(`${API}/cart/delete-cart`, {
+      return (await axios.delete(`${API}/api/shop/cart/delete-cart`, {
         params: { guestId: gid, productId },
       })).data;
     }

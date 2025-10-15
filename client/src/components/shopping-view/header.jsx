@@ -108,8 +108,12 @@ function HeaderRightContent({ openMobileCartSheet, setOpenMobileCartSheet = () =
   }, [dispatch, user?.id]);
 
   const handleLogOut = () => {
-    dispatch(logOut());
-    navigate("/auth/login");
+    setTimeout(() => {
+      dispatch(logOut());
+      setOpenCartSheet(false);
+      setOpenMobileCartSheet(false);
+      navigate("/");
+    }, 100);
   };
 
   return (
@@ -174,7 +178,8 @@ function HeaderRightContent({ openMobileCartSheet, setOpenMobileCartSheet = () =
             <User className="mr-2 h-4 w-4" /> Account
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogOut}>
+          <DropdownMenuItem onClick={() => {handleLogOut();
+             setOpenMobileCartSheet(false)}}>
             <LogOutIcon className="mr-2 h-4 w-4" /> Log out
           </DropdownMenuItem>
         </DropdownMenuContent>

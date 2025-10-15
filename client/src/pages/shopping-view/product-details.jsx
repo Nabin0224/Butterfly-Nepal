@@ -240,7 +240,7 @@ const ProductDetailsPage = () => {
           productId: getCurrentProductId,
           quantity: finalQuantity,
           color: selectedColor,
-          size: selectedSize,
+          size: selectedSize || "free size",
         })
       ).then((data) => {
         if (data?.payload?.success) {

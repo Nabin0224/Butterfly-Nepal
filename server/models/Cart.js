@@ -27,7 +27,7 @@ items : [
     },
     size: {
         type: String,
-        required: true,
+        required: false,
     }
 }
 ]
