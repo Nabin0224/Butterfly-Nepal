@@ -240,8 +240,11 @@ const createCodOrder = async (req, res) => {
     }
 
     await order.save();
-  // send email without blocking
-sendOrderConfirmationEmail(order).catch(err => console.error("Email error:", err));
+ 
+    // Send order confirmation email (non-blocking)
+    sendOrderConfirmationEmail(order).catch((err) =>
+      console.error("Email send error:", err)
+    );
 
     return res.status(200).json({
       success: true,
