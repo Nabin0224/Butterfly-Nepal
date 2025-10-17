@@ -1,0 +1,41 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main  # Run when you push to main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2️⃣ Copy files to DigitalOcean
+      - name: Copy files to DigitalOcean
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USER }}
+          key: ${{ secrets.DO_KEY }}
+          source: "."
+          target: "/var/www/your_project_folder"
+
+      # 3️⃣ Connect to the server and run commands
+      - name: Run commands on server (install deps + restart app)
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USER }}
+          key: ${{ secrets.DO_KEY }}
+          script: |
+            cd /var/www/your_project_folder
+            echo "Installing dependencies..."
+            npm install --production
+            echo "Building project..."
+            npm run build
+            echo "Restarting app..."
+            pm2 restart all || pm2 start server.js
