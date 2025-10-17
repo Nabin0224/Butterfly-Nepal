@@ -23,6 +23,7 @@ jobs:
           key: ${{ secrets.DO_KEY }}
           source: "."
           target: "/home/nabin/Butterfly-Nepal"
+          strip_components: 0
 
       # 3️⃣ Connect to the server and run commands
       - name: Run commands on server (install deps + restart app)
@@ -32,7 +33,7 @@ jobs:
           username: ${{ secrets.DO_USER }}
           key: ${{ secrets.DO_KEY }}
           script: |
-            cd /var/www/your_project_folder
+            cd /home/nabin/Butterfly-Nepal
             echo "Installing dependencies..."
             npm install --production
             echo "Building project..."
