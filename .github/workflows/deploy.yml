@@ -38,4 +38,4 @@ jobs:
             npm install --production
             echo "Building project..."
             echo "Restarting app..."
-            pm2 restart all || pm2 start server.js
+            pm2 restart all || pm2 start server
