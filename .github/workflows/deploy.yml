@@ -22,7 +22,7 @@ jobs:
           username: ${{ secrets.DO_USER }}
           key: ${{ secrets.DO_KEY }}
           source: "."
-          target: "/var/www/your_project_folder"
+          target: "/home/nabin/Butterfly-Nepal"
 
       # 3️⃣ Connect to the server and run commands
       - name: Run commands on server (install deps + restart app)
