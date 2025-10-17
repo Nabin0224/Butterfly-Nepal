@@ -37,6 +37,5 @@ jobs:
             echo "Installing dependencies..."
             npm install --production
             echo "Building project..."
-            npm run build
             echo "Restarting app..."
             pm2 restart all || pm2 start server.js
