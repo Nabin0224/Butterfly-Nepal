@@ -438,14 +438,14 @@ const ShoppingCheckout = () => {
       .unwrap()
       .then((res) => {
         dispatch(clearCart());
-        dispatch(
-          sendSms({
-            to: [orderData?.addressInfo?.phone],
-            text: [
-              `Hi ${firstName}, your order at ${Store_Name} is confirmed. Visit www.butterflynepal.com`,
-            ],
-          })
-        );
+        // dispatch(
+        //   sendSms({
+        //     to: [orderData?.addressInfo?.phone],
+        //     text: [
+        //       `Hi ${firstName}, your order at ${Store_Name} is confirmed. Visit www.butterflynepal.com`,
+        //     ],
+        //   })
+        // );
         setIsLoading(false);
         navigate("/payment-success");
       })

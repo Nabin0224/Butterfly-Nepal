@@ -61,7 +61,7 @@ const ShoppingOrderDetailsView = ({orderDetails}) => {
                         <span>{item.title}</span>
                         <span>x {item.quantity}</span>
                         <span>{item.size}</span>
-                        <span>{item.price}</span>
+                        <span>{orderDetails.totalAmount}</span>
                     </li>
                     ) : null
     
