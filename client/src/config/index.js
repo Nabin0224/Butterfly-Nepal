@@ -69,6 +69,7 @@ export const addProductFormElements = [
     options: [
       { id: "dress", label: "Dress" },
       { id: "bag", label: "Bags" },
+      { id: "winter", label: "Winter Collections" },
       // { id: "women", label: "Women" },
       // { id: "kids", label: "Kids" },
       // { id: "accessories", label: "Accessories" },
@@ -296,6 +297,7 @@ export const filterOptions = {
   category: [
     { id: "dress", label: "Dress" },
     { id: "bags", label: "Bags" },
+    { id: "winter", label: "Winter Collections" },
     // { id: "accessories", label: "Accessories" },
     // { id: "footwear", label: "Footwear" },
   ],

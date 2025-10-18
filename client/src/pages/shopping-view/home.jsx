@@ -30,6 +30,7 @@ export const ShoppingHome = () => {
   const { user } = useSelector((state) => state.auth);
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  console.log("Product List", productList)
 
   // --- Auto image slider ---
   useEffect(() => {
@@ -88,6 +89,9 @@ export const ShoppingHome = () => {
       },
     },
   };
+
+  const winterCollection = productList && productList.length > 0 ?  productList.filter((product) => product.category === "winter") : null;
+  console.log("winter collection", winterCollection)
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -184,11 +188,38 @@ export const ShoppingHome = () => {
       {/* ================= HOTTEST SECTION ================= */}
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-10">Winter Collections</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {productList && productList.length > 0 
+            ? 
+            productList.filter(item => item.category === "winter")
+            .map((item) =>(
+              <ShoppingProducttile 
+              key={item._id}
+              product={item}
+              handleGetProductDetails={() =>
+                dispatch(fetchProductDetails(item._id))
+              }
+              handleAddtoCart={() =>
+                handleAddtoCart(item._id, item.totalStock)
+              }
+              />
+            ) )
+            : (
+              <p className="text-center text-gray-500 col-span-full">
+                No products available yet.
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-10">New Arrivals</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {productList?.length > 0 ? (
               productList
-                .slice(0, 10)
+                .slice(-10)
                 .map((item) => (
                   <ShoppingProducttile
                     key={item._id}
