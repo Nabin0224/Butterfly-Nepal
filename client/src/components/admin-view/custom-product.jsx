@@ -24,7 +24,7 @@ const CustomProduct = ({ productList, setItems, items, setOpenProductDialog }) =
             productId: item._id,
             title: item.title,
             image: item.image,
-            price: item.price,
+            price: item.salePrice ? item.salePrice : item.price,
             quantity: 1,
             color: selectedColor.colorName,
           },
