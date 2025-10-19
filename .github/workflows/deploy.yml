@@ -26,14 +26,14 @@ jobs:
           strip_components: 0
 
       # 3️⃣ Connect to the server and run commands
-      - name: Run commands on server (install deps + restart app)
+      - name: Run commands on server (install deps + build + restart)
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DO_HOST }}
           username: ${{ secrets.DO_USER }}
           key: ${{ secrets.DO_KEY }}
           script: |
-             cd /home/nabin/Butterfly-Nepal
+            cd /home/nabin/Butterfly-Nepal
 
             echo "🔹 Pulling latest changes..."
             git pull
@@ -43,14 +43,14 @@ jobs:
             npm install --production
 
             echo "🔹 Installing client dependencies..."
-            cd ..client
+            cd ../client
             npm install
 
             echo "🔹 Building client..."
             npm run build
 
             echo "🔹 Restarting server with PM2..."
-            cd ..server
+            cd ../server
             pm2 restart all || pm2 start index.js --name "butterfly-server"
 
             echo "✅ Deployment complete!"
