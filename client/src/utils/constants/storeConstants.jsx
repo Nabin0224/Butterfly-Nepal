@@ -1,1 +1,1 @@
-export const Store_Name = "Butterfly Nepal"
+export const Store_Name = "Butterfly Nepal Clothing Store"

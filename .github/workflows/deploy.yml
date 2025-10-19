@@ -33,9 +33,24 @@ jobs:
           username: ${{ secrets.DO_USER }}
           key: ${{ secrets.DO_KEY }}
           script: |
-            cd /home/nabin/Butterfly-Nepal
-            echo "Installing dependencies..."
+             cd /home/nabin/Butterfly-Nepal
+
+            echo "🔹 Pulling latest changes..."
+            git pull
+
+            echo "🔹 Installing server dependencies..."
+            cd server
             npm install --production
-            echo "Building project..."
-            echo "Restarting app..."
-            pm2 restart all || pm2 start server
+
+            echo "🔹 Installing client dependencies..."
+            cd ..client
+            npm install
+
+            echo "🔹 Building client..."
+            npm run build
+
+            echo "🔹 Restarting server with PM2..."
+            cd ..server
+            pm2 restart all || pm2 start index.js --name "butterfly-server"
+
+            echo "✅ Deployment complete!"
