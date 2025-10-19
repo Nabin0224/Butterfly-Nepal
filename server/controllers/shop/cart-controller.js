@@ -113,7 +113,7 @@ const fetchCartItems = async (req, res) => {
 
 const updateCartItems = async (req, res) => {
   try {
-    const { userId, guestId, productId, quantity, color } = req.body;
+    const { userId, guestId, productId, quantity, color, size} = req.body;
 
     if ((!userId && !guestId) || !productId ||  !color || quantity <= 0 || !size)
       return res.status(400).json({
@@ -176,9 +176,11 @@ const updateCartItems = async (req, res) => {
 
 const deleteCartItems = async (req, res) => {
   try {
-    const { userId, productId } = req.params;
+    const { userId, productId, color } = req.params;
+
+    console.log("paramas in delete", req.params)
     const { guestId } = req.query;
-    if ((!userId && !guestId) || !productId) {
+    if ((!userId && !guestId ) || !productId || !color) {
       return res.status(400).json({
         success: false,
         message: "Invalid data provided!",
@@ -196,8 +198,10 @@ const deleteCartItems = async (req, res) => {
       });
     }
 
+    console.log("cart items in delete", cart.items)
+
     cart.items = cart.items.filter(
-      (item) => item.productId._id.toString() !== productId
+      (item) => !(item.productId._id.toString() === productId && item.color === color)
     );
     await cart.save();
 
@@ -212,6 +216,7 @@ const deleteCartItems = async (req, res) => {
       title: item.productId ? item.productId.title : "Product not found!",
       price: item.productId ? item.productId.price : null,
       salePrice: item.productId ? item.productId.salePrice : null,
+      color: item.color,
       quantity: item.quantity,   
       size: item.size,
     }));

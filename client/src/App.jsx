@@ -64,6 +64,7 @@ const App = () => {
                   productId: item.productId,
                   quantity: item.quantity,
                   color: item.color,
+                  size: item.size,
                 })
               )
             )

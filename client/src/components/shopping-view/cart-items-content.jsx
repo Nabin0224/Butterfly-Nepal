@@ -1,27 +1,29 @@
 import { Minus, Plus, Trash } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "../ui/button";
 import {
   deleteCartItems,
-  updateCartQuantity,
+  updateCartQuantity, 
   updateGuestCartItem,
   deleteGuestCartItem,
+  fetchCartItems,
 } from "../../../store/shop/cart-slice/index";
 import { useDispatch, useSelector } from "react-redux";
 import { useToast } from "@/hooks/use-toast";
 
 const UserCartItemsContent = ({ cartItem }) => {
-  console.log("cart items in cart content", cartItem)
   const { user } = useSelector((state) => state.auth);
+  console.log("cart Item from user cart items content", cartItem)
   // const { cartItem } = useSelector(state => state.shoppingCart);
   const { productList } = useSelector((state) => state.shoppingProducts);
   const dispatch = useDispatch();
   const { toast } = useToast();
 
+
   function handleDeleteCartItem(getCartItem) {
     if(user?.id) {
     dispatch(
-      deleteCartItems({ userId: user?.id, productId: getCartItem.productId })
+      deleteCartItems({ userId: user?.id, productId: getCartItem.productId, color: getCartItem.color })
     ).then((data) => {
       if (data?.payload?.success) {
         toast({
@@ -67,6 +69,7 @@ const UserCartItemsContent = ({ cartItem }) => {
         productId: getCartItem?.productId,
         quantity: updatedQuantity,
         color: getCartItem?.color,
+        size: getCartItem?.size,
       })
     );
    } else {

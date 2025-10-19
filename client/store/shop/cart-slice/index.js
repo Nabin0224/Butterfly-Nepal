@@ -35,10 +35,10 @@ export const fetchCartItems = createAsyncThunk(
 
 export const updateCartQuantity = createAsyncThunk(
   "cart/updateCartQuantity",
-  async ({ userId, productId, quantity, color }) => {
+  async ({ userId, productId, quantity, color, size }) => {
     const payload = userId
-      ? { userId, productId, quantity, color }
-      : { guestId: getGuestId(), productId, quantity, color };
+      ? { userId, productId, quantity, color, size }
+      : { guestId: getGuestId(), productId, quantity, color, size};
     const response = await axios.put(`${API}/api/shop/cart/update-cart`, payload);
     return response.data;
   }
@@ -46,13 +46,13 @@ export const updateCartQuantity = createAsyncThunk(
 
 export const deleteCartItems = createAsyncThunk(
   "cart/deleteCartItems",
-  async ({ userId, productId }) => {
+  async ({ userId, productId, color }) => {
     if (userId) {
-      return (await axios.delete(`${API}/api/shop/cart/delete-cart/${userId}/${productId}`)).data;
+      return (await axios.delete(`${API}/api/shop/cart/delete-cart/${userId}/${productId}/${color}`)).data;
     } else {
       const gid = getGuestId();
       return (await axios.delete(`${API}/api/shop/cart/delete-cart`, {
-        params: { guestId: gid, productId },
+        params: { guestId: gid, productId, color },
       })).data;
     }
   }
