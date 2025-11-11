@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Badge } from "../ui/badge";
 import {
   getAllOrdersForAdmin,
+  getAllWebsiteOrdersForAdmin,
   getOrderDetailsForAdmin,
   getUpdatedOrderStatus,
 } from "../../../store/admin/order-slice/index";
@@ -81,17 +82,22 @@ const AdminOrdersView = () => {
 
   const {
     orderList,
+    websiteOrderList,
     orderDetails,
     resetOrderDetails,
     totalOrders,
     totalPages,
+    totalWebsitePages,
   } = useSelector((state) => state.adminOrders);
+  console.log("orderlist check", orderList)
+  console.log("websiteOrderList check", websiteOrderList)
 
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(
     (getId) => {
       dispatch(getAllOrdersForAdmin(currentPage));
+      dispatch(getAllWebsiteOrdersForAdmin(currentPage))
       dispatch(getOrderDetailsForAdmin(getId));
     },
     [dispatch, currentPage]
@@ -99,6 +105,7 @@ const AdminOrdersView = () => {
 
   useEffect(() => {
     dispatch(getAllOrdersForAdmin());
+    dispatch(getAllWebsiteOrdersForAdmin())
   }, []);
 
   const handleFetchOrderDetails = async (getId) => {
@@ -225,12 +232,14 @@ const AdminOrdersView = () => {
                 </div>
                 <div className="flex justify-end">
                   <div className="flex flex-col">
-                  <QRCode
-                    value={`${window.location.origin}/admin/qrcodedetail/${order._id}`}
-                    size={200}
-                  />
-                  <br />
-                  <p className="text-center text-xl opacity-80">Scan for Order Tracking</p>
+                    <QRCode
+                      value={`${window.location.origin}/admin/qrcodedetail/${order._id}`}
+                      size={200}
+                    />
+                    <br />
+                    <p className="text-center text-xl opacity-80">
+                      Scan for Order Tracking
+                    </p>
                   </div>
                 </div>
               </div>
@@ -370,37 +379,39 @@ const AdminOrdersView = () => {
         </Button>
       </div>
       <div className="flex justify-between">
-      <form onSubmit={handleSubmit} className="w-full max-w-md  mt-2">
-        <div className="relative">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            size={20}
-          />
-          <Input
-            type="text"
-            placeholder="Search by customer name, order ID, or phone..."
-            value={search}
-            onChange={handleChange}
-            className="pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
-          <Button
-            type="submit"
-            className="absolute right-1 top-1/2 -translate-y-1/2 h-8 px-4 bg-purple-600 text-white hover:bg-purple-700"
-          >
-            Search
-          </Button>
-        </div>
-      </form>
-     
-        <Button className="mt-2" onClick={handleBulkPrint}>Print All</Button>
+        <form onSubmit={handleSubmit} className="w-full max-w-md  mt-2">
+          <div className="relative">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={20}
+            />
+            <Input
+              type="text"
+              placeholder="Search by customer name, order ID, or phone..."
+              value={search}
+              onChange={handleChange}
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <Button
+              type="submit"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 px-4 bg-purple-600 text-white hover:bg-purple-700"
+            >
+              Search
+            </Button>
+          </div>
+        </form>
+
+        <Button className="mt-2" onClick={handleBulkPrint}>
+          Print All
+        </Button>
       </div>
 
-      <Tabs defaultValue="Website Order" className="relative">
+      <Tabs defaultValue="Custom Order" className="relative">
         <TabsList>
           <TabsTrigger value="Website Order">Website Order</TabsTrigger>
           <TabsTrigger value="Custom Order">Custom Order</TabsTrigger>
         </TabsList>
-        <TabsContent value="Website Order">
+        <TabsContent value="Custom Order">
           <Card>
             <CardHeader className="flex justify-between items-center">
               <CardTitle>Order History</CardTitle>
@@ -612,7 +623,208 @@ const AdminOrdersView = () => {
             />
           </div>
         </TabsContent>
-        <TabsContent value="Custom Order"> Blank </TabsContent>
+        <TabsContent value="Website Order">
+        <Card>
+            <CardHeader className="flex justify-between items-center">
+              <CardTitle>Order History</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table className="mb-4 md:mb-8">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>
+                      <input
+                        className="shadow-md"
+                        type="checkbox"
+                        checked={selectAll}
+                        onChange={handleSelectAll}
+                      ></input>
+                    </TableHead>
+
+                    <TableHead>Customer Name</TableHead>
+                    <TableHead>Order Date</TableHead>
+                    <TableHead>Order Status</TableHead>
+                    <TableHead>Order Price</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {(searchOrders && searchOrders.length > 0
+                    ? searchOrders
+                    : websiteOrderList
+                  )?.map((item, index) => (
+                    <TableRow key={item?._id}>
+                      <TableCell>
+                        <input
+                          type="checkbox"
+                          checked={selectedOrders.includes(item?._id)}
+                          onClick={(event) =>
+                            handleCheckboxChange(item?._id, event, index)
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>{item?.addressInfo?.fullName}</TableCell>
+                      <TableCell>
+                        <span className="mr-3">
+                          {" "}
+                          {item?.orderDate?.split(",")[0]}
+                        </span>
+                        <span className="text-muted-foreground">
+                          {item?.orderDate?.split(",")[1]}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-1 md:gap-2">
+                          <Badge
+                            className={`py-1 px-3 ${
+                              item?.orderStatus === "dispatched"
+                                ? "bg-green-500"
+                                : item?.orderStatus === "pending"
+                                ? "bg-gray-400"
+                                : "bg-black"
+                            }`}
+                          >
+                            {item?.orderStatus}
+                          </Badge>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <ChevronDown />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleOrderStatusChange(
+                                    item?._id,
+                                    "dispatched"
+                                  )
+                                }
+                              >
+                                dispatched
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleOrderStatusChange(item?._id, "pending")
+                                }
+                              >
+                                pending
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </TableCell>
+                      <TableCell>{item?.totalAmount}</TableCell>
+                      <TableCell className="flex gap-2">
+                        <Button
+                          onClick={() => {
+                            setOpenDetailsDialog(true);
+                            handleFetchOrderDetails(item?._id);
+                          }}
+                        >
+                          View Details
+                        </Button>
+                        <Dialog
+                          open={openDetailsDialog}
+                          onOpenChange={() => {
+                            setOpenDetailsDialog(false);
+                            // dispatch(resetOrderDetails());
+                          }}
+                        >
+                          <div>
+                            <AdminOrderDetailsView
+                              orderDetails={orderDetails}
+                            />
+                          </div>
+                        </Dialog>
+                        <Button
+                          onClick={() => {
+                            setOpenDetailsDialog(false);
+                            handleFetchOrderDetails(item?._id);
+
+                            setTimeout(() => handlePrint(), 0); // Ensure order details are loaded before printing
+                          }}
+                        >
+                          Print
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            handleUpdateCustomOrder(item?._id);
+                            navigate(`/admin/createorder/${item?._id}`);
+                          }}
+                        >
+                          <Edit />
+                        </Button>
+
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="outline">
+                              <Trash2 />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Are you sure to delete order?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription className="text-red-500">
+                                order will be permanently deleted form database!
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel className="bg-gray-500 text-white hover:bg-gray-700 rounded-sm p-1 mr-1">
+                                Cancel
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                className="bg-red-600 text-white hover:bg-red-700 rounded-sm p-1"
+                                onClick={() => {
+                                  handleDeleteCustomOrder(item?._id);
+                                }}
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="flex gap-4 absolute bottom-1 left-7">
+                <Button
+                  className="bg-green-600"
+                  onClick={handleBulkStatusChange}
+                >
+                  Dispatch Orders
+                </Button>
+              </div>
+              {/* Pagination Controls */}
+              <div className="flex justify-center items-center gap-4 mt-4 absolute bottom-1 right-1">
+                <Button
+                  variant="outline"
+                  disabled={currentPage === 1}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                >
+                  <ChevronLeft /> Previous
+                </Button>
+                <span className="text-xs">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  disabled={currentPage === totalPages}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                >
+                  Next <ChevronRight />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );

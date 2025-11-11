@@ -60,6 +60,44 @@ const getAllOrdersofAllUser = async (req, res) => {
   }
 };
 
+const getAllWebsiteOrdersForAdmin = async (req, res) => {
+  try {
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = 50;
+    const skip = (page-1) * limit ;
+    const codorders = await CodOrder.find({}).sort({createdAt: -1});
+
+    if(codorders.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No orders from website!",
+      })
+    }
+       // const total number of orders 
+       const totalOrders = codorders.length;
+       const totalPages = Math.ceil(totalOrders/limit);
+   
+       //  applying panigation
+       const panigatedOrders = codorders.slice(skip, skip + limit);
+
+    return res.status(200).json({
+      success: true,
+      data: panigatedOrders,
+      totalOrders,
+      totalPages,
+      currentPage: page,
+    }
+    )
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Some error occured",
+      error: error.message,
+    })
+  }
+}
+
 const getOrderDetailsForAdmin = async (req, res) => {
   try {
     const { id } = req.params;
@@ -137,4 +175,5 @@ module.exports = {
   getAllOrdersofAllUser,
   getOrderDetailsForAdmin,
   updateOrderStatus,
+  getAllWebsiteOrdersForAdmin
 };
