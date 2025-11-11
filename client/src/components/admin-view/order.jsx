@@ -87,6 +87,7 @@ const AdminOrdersView = () => {
     resetOrderDetails,
     totalOrders,
     totalPages,
+    totalWebsiteOrders,
     totalWebsitePages,
   } = useSelector((state) => state.adminOrders);
   console.log("orderlist check", orderList)
@@ -624,6 +625,7 @@ const AdminOrdersView = () => {
           </div>
         </TabsContent>
         <TabsContent value="Website Order">
+          <div className="flex justify-end p-2 mx-2"><span className="text-muted-foreground text-sm">Total Orders: {totalWebsiteOrders}</span></div>
         <Card>
             <CardHeader className="flex justify-between items-center">
               <CardTitle>Order History</CardTitle>

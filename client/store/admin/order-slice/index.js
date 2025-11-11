@@ -7,6 +7,7 @@ const initialState = {
   websiteOrderList: [],
   orderDetails: null,
   totalOrders: '',
+  totalWebsiteOrders: '',
   totalPages: '',
   totalWebsitePages: ''
 };
@@ -79,6 +80,7 @@ const adminOrderSlice = createSlice({
         state.isLoading = false;
         state.websiteOrderList = action.payload.data;
         state.totalWebsitePages = action.payload.totalPages; // Store total pages
+        state.totalWebsiteOrders = action.payload.totalOrders; // Store total pages
         state.currentPage = action.payload.currentPage; // Store current page
       })
       .addCase(getAllWebsiteOrdersForAdmin.rejected, (state, action) => {
